@@ -15,11 +15,19 @@ export interface Question {
   category: 'smishing' | 'sns' | 'game';
 }
 
+export interface ModuleProgress {
+  completed: boolean;
+  correctAnswers: number;
+  totalQuestions: number;
+  lastPlayedAt: string | null;
+}
+
 export interface GameState {
   money: number;
   answeredQuestions: string[];
   currentModule: string | null;
   tutorialCompleted: boolean;
+  moduleProgress: Record<string, ModuleProgress>;
 }
 
 export const RISK_DEDUCTIONS: Record<RiskLevel, number> = {
@@ -169,35 +177,32 @@ export const getQuestionsByCategory = (category: string): Question[] => {
   return QUESTIONS.filter(q => q.category === category);
 };
 
+const getDefaultState = (): GameState => ({
+  money: INITIAL_MONEY,
+  answeredQuestions: [],
+  currentModule: null,
+  tutorialCompleted: false,
+  moduleProgress: {},
+});
+
 const getInitialState = (): GameState => {
   if (typeof window === 'undefined') {
-    return {
-      money: INITIAL_MONEY,
-      answeredQuestions: [],
-      currentModule: null,
-      tutorialCompleted: false,
-    };
+    return getDefaultState();
   }
   
   const saved = localStorage.getItem(STORAGE_KEY);
   if (saved) {
     try {
-      return JSON.parse(saved);
-    } catch {
+      const parsed = JSON.parse(saved);
       return {
-        money: INITIAL_MONEY,
-        answeredQuestions: [],
-        currentModule: null,
-        tutorialCompleted: false,
+        ...getDefaultState(),
+        ...parsed,
       };
+    } catch {
+      return getDefaultState();
     }
   }
-  return {
-    money: INITIAL_MONEY,
-    answeredQuestions: [],
-    currentModule: null,
-    tutorialCompleted: false,
-  };
+  return getDefaultState();
 };
 
 export function useGameState() {
@@ -238,12 +243,36 @@ export function useGameState() {
     }));
   }, []);
 
+  const updateModuleProgress = useCallback((
+    moduleId: string, 
+    correctAnswers: number, 
+    totalQuestions: number
+  ) => {
+    setState(prev => ({
+      ...prev,
+      moduleProgress: {
+        ...prev.moduleProgress,
+        [moduleId]: {
+          completed: true,
+          correctAnswers,
+          totalQuestions,
+          lastPlayedAt: new Date().toISOString(),
+        },
+      },
+    }));
+  }, []);
+
+  const getModuleProgress = useCallback((moduleId: string): ModuleProgress | null => {
+    return state.moduleProgress[moduleId] || null;
+  }, [state.moduleProgress]);
+
   const resetGame = useCallback(() => {
     setState({
       money: INITIAL_MONEY,
       answeredQuestions: [],
       currentModule: null,
       tutorialCompleted: true,
+      moduleProgress: {},
     });
     setMoneyChange(null);
   }, []);
@@ -258,6 +287,8 @@ export function useGameState() {
     markQuestionAnswered,
     setCurrentModule,
     completeTutorial,
+    updateModuleProgress,
+    getModuleProgress,
     resetGame,
   };
 }

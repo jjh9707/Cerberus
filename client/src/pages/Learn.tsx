@@ -1,16 +1,10 @@
 import ModuleCard, { MODULES } from '@/components/ModuleCard';
 import { useGame } from '@/lib/GameContext';
-import { getQuestionsByCategory } from '@/lib/gameState';
 import { useLocation } from 'wouter';
 
 export default function Learn() {
   const [, setLocation] = useLocation();
-  const { answeredQuestions } = useGame();
-
-  const getCompletedCount = (moduleId: string) => {
-    const moduleQuestions = getQuestionsByCategory(moduleId);
-    return moduleQuestions.filter(q => answeredQuestions.includes(q.id)).length;
-  };
+  const { getModuleProgress } = useGame();
 
   return (
     <main className="flex-1 py-8 lg:py-12">
@@ -27,7 +21,7 @@ export default function Learn() {
             <ModuleCard
               key={module.id}
               module={module}
-              completedCount={getCompletedCount(module.id)}
+              progress={getModuleProgress(module.id)}
               onClick={() => setLocation(`/learn/${module.id}`)}
             />
           ))}

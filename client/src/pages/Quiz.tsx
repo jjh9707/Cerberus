@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { useLocation, useRoute } from 'wouter';
 import { MessageSquareWarning, Users, Gamepad2 } from 'lucide-react';
 import ModuleIntro from '@/components/ModuleIntro';
@@ -54,11 +54,12 @@ export default function Quiz() {
   const [, setLocation] = useLocation();
   const moduleId = params?.moduleId as keyof typeof MODULE_INFO;
   
-  const { money, isBankrupt, deductMoney, markQuestionAnswered, resetGame } = useGame();
+  const { money, isBankrupt, deductMoney, markQuestionAnswered, updateModuleProgress, resetGame } = useGame();
   
   const [quizState, setQuizState] = useState<QuizState>('intro');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [startMoney, setStartMoney] = useState(money);
+  const correctAnswersRef = useRef(0);
 
   const moduleInfo = MODULE_INFO[moduleId];
   const questions = useMemo(() => getQuestionsByCategory(moduleId), [moduleId]);
@@ -72,10 +73,14 @@ export default function Quiz() {
   const handleStart = () => {
     setStartMoney(money);
     setCurrentQuestionIndex(0);
+    correctAnswersRef.current = 0;
     setQuizState('quiz');
   };
 
   const handleAnswer = (isCorrect: boolean, deduction: number) => {
+    if (isCorrect) {
+      correctAnswersRef.current += 1;
+    }
     if (!isCorrect && deduction > 0) {
       deductMoney(deduction);
     }
@@ -86,6 +91,7 @@ export default function Quiz() {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
     } else {
+      updateModuleProgress(moduleId, correctAnswersRef.current, questions.length);
       setQuizState('result');
     }
   };

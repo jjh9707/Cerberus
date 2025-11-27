@@ -1,8 +1,9 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, MessageSquareWarning, Users, Gamepad2, type LucideIcon } from 'lucide-react';
+import { ArrowRight, CheckCircle2, MessageSquareWarning, Users, Gamepad2, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { type ModuleProgress } from '@/lib/gameState';
 
 export interface ModuleInfo {
   id: string;
@@ -15,7 +16,7 @@ export interface ModuleInfo {
 
 interface ModuleCardProps {
   module: ModuleInfo;
-  completedCount: number;
+  progress: ModuleProgress | null;
   onClick: () => void;
 }
 
@@ -46,10 +47,13 @@ export const MODULES: ModuleInfo[] = [
   },
 ];
 
-export default function ModuleCard({ module, completedCount, onClick }: ModuleCardProps) {
+export default function ModuleCard({ module, progress, onClick }: ModuleCardProps) {
   const Icon = module.icon;
-  const isCompleted = completedCount >= module.questionCount;
-  const progress = Math.round((completedCount / module.questionCount) * 100);
+  const isCompleted = progress?.completed ?? false;
+  const correctCount = progress?.correctAnswers ?? 0;
+  const progressPercent = isCompleted 
+    ? Math.round((correctCount / module.questionCount) * 100) 
+    : 0;
 
   return (
     <Card 
@@ -62,11 +66,18 @@ export default function ModuleCard({ module, completedCount, onClick }: ModuleCa
     >
       <CardContent className="p-6">
         <div className="flex flex-col items-center text-center gap-4">
-          <div className={cn(
-            'w-16 h-16 rounded-2xl flex items-center justify-center text-white',
-            module.color
-          )}>
-            <Icon className="w-8 h-8" />
+          <div className="relative">
+            <div className={cn(
+              'w-16 h-16 rounded-2xl flex items-center justify-center text-white',
+              module.color
+            )}>
+              <Icon className="w-8 h-8" />
+            </div>
+            {isCompleted && (
+              <div className="absolute -top-1 -right-1 w-6 h-6 bg-success rounded-full flex items-center justify-center">
+                <CheckCircle2 className="w-4 h-4 text-success-foreground" />
+              </div>
+            )}
           </div>
           
           <div className="space-y-2">
@@ -75,19 +86,27 @@ export default function ModuleCard({ module, completedCount, onClick }: ModuleCa
           </div>
 
           <div className="w-full space-y-2">
-            <div className="flex justify-between items-center text-sm">
-              <span className="text-muted-foreground">진행도</span>
-              <Badge variant={isCompleted ? 'default' : 'secondary'} className={isCompleted ? 'bg-success' : ''}>
-                {completedCount}/{module.questionCount}
-              </Badge>
+            <div className="flex justify-between items-center gap-2 text-sm">
+              <span className="text-muted-foreground">
+                {isCompleted ? '정답률' : '미완료'}
+              </span>
+              {isCompleted ? (
+                <Badge variant="default" className="bg-success">
+                  {correctCount}/{module.questionCount} ({progressPercent}%)
+                </Badge>
+              ) : (
+                <Badge variant="secondary">
+                  {module.questionCount}문제
+                </Badge>
+              )}
             </div>
             <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
               <div 
                 className={cn(
                   'h-full transition-all duration-500',
-                  isCompleted ? 'bg-success' : 'bg-primary'
+                  isCompleted ? 'bg-success' : 'bg-muted-foreground/30'
                 )}
-                style={{ width: `${progress}%` }}
+                style={{ width: isCompleted ? `${progressPercent}%` : '0%' }}
               />
             </div>
           </div>
