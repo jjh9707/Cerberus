@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ShieldCheck, ShieldAlert, CheckCircle2, XCircle, ArrowRight } from 'lucide-react';
@@ -6,6 +6,7 @@ import MessageBubble from './MessageBubble';
 import RiskBadge from './RiskBadge';
 import TimerBar from './TimerBar';
 import { type Question, RISK_DEDUCTIONS } from '@/lib/gameState';
+import { playCorrectAnswerFeedback, playWrongAnswerFeedback } from '@/lib/sounds';
 import { cn } from '@/lib/utils';
 
 interface QuizQuestionProps {
@@ -38,6 +39,12 @@ export default function QuizQuestion({
     
     const correct = answer === (question.isDangerous ? 'danger' : 'safe');
     const lostMoney = !correct && question.isDangerous ? RISK_DEDUCTIONS[question.riskLevel] : 0;
+    
+    if (correct) {
+      playCorrectAnswerFeedback();
+    } else {
+      playWrongAnswerFeedback();
+    }
     
     onAnswer(correct, lostMoney);
   }, [isAnswered, question, onAnswer]);
