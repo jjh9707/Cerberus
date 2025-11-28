@@ -28,7 +28,7 @@ export const MODULES: ModuleInfo[] = [
     description: '유괴 예방과 그루밍(온라인 유인)을 알아보고 스스로를 지켜요!',
     icon: ShieldAlert,
     color: 'bg-red-500',
-    questionCount: 15,
+    questionCount: 17,
   },
   {
     id: 'scam',
