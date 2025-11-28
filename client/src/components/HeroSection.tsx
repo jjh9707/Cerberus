@@ -37,7 +37,7 @@ export default function HeroSection({ onStartTutorial }: HeroSectionProps) {
             </p>
           </div>
 
-          <div className="flex flex-row flex-wrap items-center justify-center gap-4">
+          <div className="flex flex-col items-center justify-center gap-4">
             {onStartTutorial && (
               <Button 
                 size="lg" 
