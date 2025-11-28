@@ -67,14 +67,14 @@ export default function ModuleCard({ module, progress, onClick }: ModuleCardProp
   return (
     <Card 
       className={cn(
-        'overflow-visible hover-elevate active-elevate-2 cursor-pointer transition-all',
+        'overflow-visible hover-elevate active-elevate-2 cursor-pointer transition-all h-full',
         isCompleted && 'ring-2 ring-success'
       )}
       onClick={onClick}
       data-testid={`module-card-${module.id}`}
     >
-      <CardContent className="p-6">
-        <div className="flex flex-col items-center text-center gap-4">
+      <CardContent className="p-6 h-full">
+        <div className="flex flex-col items-center text-center gap-4 h-full">
           <div className="relative">
             <div className={cn(
               'w-16 h-16 rounded-2xl flex items-center justify-center text-white',
@@ -89,7 +89,7 @@ export default function ModuleCard({ module, progress, onClick }: ModuleCardProp
             )}
           </div>
           
-          <div className="space-y-2">
+          <div className="space-y-2 flex-1">
             <h3 className="text-xl font-bold">{module.title}</h3>
             <p className="text-muted-foreground text-sm">{module.description}</p>
           </div>
@@ -120,7 +120,7 @@ export default function ModuleCard({ module, progress, onClick }: ModuleCardProp
             </div>
           </div>
 
-          <Button className="w-full gap-2" data-testid={`button-start-${module.id}`}>
+          <Button className="w-full gap-2 mt-auto" data-testid={`button-start-${module.id}`}>
             {isCompleted ? '다시 도전하기' : '시작하기'}
             <ArrowRight className="w-4 h-4" />
           </Button>
