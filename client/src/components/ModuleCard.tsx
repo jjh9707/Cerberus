@@ -1,7 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, CheckCircle2, MessageSquareWarning, Users, Gamepad2, type LucideIcon } from 'lucide-react';
+import { ArrowRight, CheckCircle2, ShieldAlert, Smartphone, Gamepad2, Shuffle, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { type ModuleProgress } from '@/lib/gameState';
 
@@ -16,34 +16,43 @@ export interface ModuleInfo {
 
 interface ModuleCardProps {
   module: ModuleInfo;
-  progress: ModuleProgress | null;
+  progress?: ModuleProgress | null;
+  completedCount?: number;
   onClick: () => void;
 }
 
 export const MODULES: ModuleInfo[] = [
   {
-    id: 'smishing',
-    title: '스미싱 알아보기',
-    description: '이상한 문자 메시지를 구별하는 방법을 배워요!',
-    icon: MessageSquareWarning,
-    color: 'bg-blue-500',
-    questionCount: 5,
+    id: 'safety',
+    title: '안전 지키기',
+    description: '유괴 예방과 그루밍(온라인 유인)을 알아보고 스스로를 지켜요!',
+    icon: ShieldAlert,
+    color: 'bg-red-500',
+    questionCount: 15,
   },
   {
-    id: 'sns',
-    title: 'SNS 사칭 조심하기',
-    description: '가짜 친구 계정을 알아보는 방법을 배워요!',
-    icon: Users,
-    color: 'bg-green-500',
-    questionCount: 4,
-  },
-  {
-    id: 'game',
-    title: '게임 아이템 사기 주의',
-    description: '"무료 아이템" 광고의 함정을 배워요!',
+    id: 'scam',
+    title: '사기 피하기',
+    description: '게임 아이템 사기와 도박의 위험성을 배워요!',
     icon: Gamepad2,
     color: 'bg-orange-500',
-    questionCount: 5,
+    questionCount: 15,
+  },
+  {
+    id: 'digital',
+    title: '디지털 안전',
+    description: '스미싱과 SNS 사칭을 구별하는 방법을 배워요!',
+    icon: Smartphone,
+    color: 'bg-blue-500',
+    questionCount: 15,
+  },
+  {
+    id: 'practice',
+    title: '실전 테스트',
+    description: '모든 모듈의 문제를 랜덤으로 풀어보세요!',
+    icon: Shuffle,
+    color: 'bg-purple-500',
+    questionCount: 20,
   },
 ];
 

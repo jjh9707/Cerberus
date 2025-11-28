@@ -33,17 +33,11 @@ export default function HeroSection({ onStartTutorial }: HeroSectionProps) {
             <p className="text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto">
               위험한 문자 메시지, SNS 사칭, 게임 아이템 사기를 알아보고
               <br className="hidden sm:block" />
-              가상 돈으로 실제 피해를 체험해봐요!
+              유괴와 그루밍 예방까지 배워요!
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/learn">
-              <Button size="lg" className="gap-2 px-8 text-lg" data-testid="button-start-learning">
-                학습 시작하기
-                <ArrowRight className="w-5 h-5" />
-              </Button>
-            </Link>
             {onStartTutorial && (
               <Button 
                 size="lg" 
@@ -56,21 +50,12 @@ export default function HeroSection({ onStartTutorial }: HeroSectionProps) {
                 튜토리얼 보기
               </Button>
             )}
-          </div>
-
-          <div className="pt-8 grid grid-cols-3 gap-8 max-w-lg mx-auto">
-            <div className="text-center">
-              <div className="text-3xl font-black text-primary">100,000원</div>
-              <div className="text-sm text-muted-foreground">시작 금액</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-black text-secondary">14+</div>
-              <div className="text-sm text-muted-foreground">실전 문제</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-black text-warning">3</div>
-              <div className="text-sm text-muted-foreground">학습 모듈</div>
-            </div>
+            <Link href="/learn">
+              <Button size="lg" className="gap-2 px-8 text-lg" data-testid="button-start-learning">
+                학습 시작하기
+                <ArrowRight className="w-5 h-5" />
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

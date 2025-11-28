@@ -1,6 +1,6 @@
 import { useState, useMemo, useRef } from 'react';
 import { useLocation, useRoute } from 'wouter';
-import { MessageSquareWarning, Users, Gamepad2 } from 'lucide-react';
+import { ShieldAlert, Smartphone, Gamepad2, Shuffle } from 'lucide-react';
 import ModuleIntro from '@/components/ModuleIntro';
 import QuizQuestion from '@/components/QuizQuestion';
 import ResultScreen from '@/components/ResultScreen';
@@ -9,40 +9,52 @@ import { useGame } from '@/lib/GameContext';
 import { getQuestionsByCategory, type Question } from '@/lib/gameState';
 
 const MODULE_INFO = {
-  smishing: {
-    title: '스미싱 알아보기',
-    description: '이상한 문자 메시지를 구별하는 방법을 배워요!',
-    icon: MessageSquareWarning,
-    color: 'bg-blue-500',
+  safety: {
+    title: '안전 지키기',
+    description: '유괴 예방과 그루밍(온라인 유인)을 알아보고 스스로를 지켜요!',
+    icon: ShieldAlert,
+    color: 'bg-red-500',
     tips: [
-      '링크가 포함된 문자는 항상 조심하세요',
-      '모르는 번호에서 온 급한 요청은 의심하세요',
-      '개인정보나 돈을 요구하면 100% 사기예요',
-      '공공기관은 문자로 링크를 보내지 않아요',
+      '모르는 사람이 만나자고 하면 거절하세요',
+      '"비밀이야"라고 하면 더 위험해요',
+      '개인정보(집주소, 학교)는 알려주면 안 돼요',
+      '무섭거나 이상하면 바로 부모님께 말씀드려요',
     ],
   },
-  sns: {
-    title: 'SNS 사칭 조심하기',
-    description: '가짜 친구 계정을 알아보는 방법을 배워요!',
-    icon: Users,
-    color: 'bg-green-500',
-    tips: [
-      '친구가 갑자기 번호를 바꿨다면 의심하세요',
-      'SNS에서 돈을 요구하면 직접 확인하세요',
-      '비밀번호를 요구하는 메시지는 해킹 시도예요',
-      '팔로워 늘려준다는 제안은 거의 사기예요',
-    ],
-  },
-  game: {
-    title: '게임 아이템 사기 주의',
-    description: '"무료 아이템" 광고의 함정을 배워요!',
+  scam: {
+    title: '사기 피하기',
+    description: '게임 아이템 사기와 도박의 위험성을 배워요!',
     icon: Gamepad2,
     color: 'bg-orange-500',
     tips: [
       '무료 아이템을 미끼로 계정 정보를 뺏어가요',
       '핵/치트 파일에는 악성코드가 숨어있어요',
       '문화상품권 결제는 사기 신호예요',
-      '공식 게임사만 믿고, 외부 링크는 조심하세요',
+      '도박은 불법이고 돈만 잃어요',
+    ],
+  },
+  digital: {
+    title: '디지털 안전',
+    description: '스미싱과 SNS 사칭을 구별하는 방법을 배워요!',
+    icon: Smartphone,
+    color: 'bg-blue-500',
+    tips: [
+      '링크가 포함된 문자는 항상 조심하세요',
+      '모르는 번호에서 온 급한 요청은 의심하세요',
+      '친구가 SNS로 돈을 빌려달라면 전화로 확인하세요',
+      '비밀번호를 요구하면 100% 해킹 시도예요',
+    ],
+  },
+  practice: {
+    title: '실전 테스트',
+    description: '모든 모듈의 문제를 랜덤으로 풀어봐요!',
+    icon: Shuffle,
+    color: 'bg-purple-500',
+    tips: [
+      '지금까지 배운 내용을 총정리해요',
+      '모든 유형의 문제가 랜덤으로 나와요',
+      '실수해도 괜찮아요, 배우는 과정이니까요',
+      '모르는 건 다시 학습 모듈에서 복습하세요',
     ],
   },
 };

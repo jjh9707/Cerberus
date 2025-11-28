@@ -1,11 +1,10 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ShieldCheck, ShieldAlert, CheckCircle2, XCircle, ArrowRight } from 'lucide-react';
 import MessageBubble from './MessageBubble';
-import RiskBadge from './RiskBadge';
 import TimerBar from './TimerBar';
-import { type Question, RISK_DEDUCTIONS } from '@/lib/gameState';
+import { type Question, type OXQuestion, type ChoiceQuestion, RISK_DEDUCTIONS } from '@/lib/gameState';
 import { playCorrectAnswerFeedback, playWrongAnswerFeedback } from '@/lib/sounds';
 import { cn } from '@/lib/utils';
 
@@ -24,21 +23,38 @@ export default function QuizQuestion({
   questionNumber,
   totalQuestions,
 }: QuizQuestionProps) {
-  const [selectedAnswer, setSelectedAnswer] = useState<'safe' | 'danger' | null>(null);
+  const [selectedAnswer, setSelectedAnswer] = useState<string | number | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);
   const [timerKey, setTimerKey] = useState(0);
 
-  const isCorrect = selectedAnswer === (question.isDangerous ? 'danger' : 'safe');
-  const deduction = question.isDangerous ? RISK_DEDUCTIONS[question.riskLevel] : 0;
+  const isOXQuestion = question.type === 'ox';
+  const oxQuestion = question as OXQuestion;
+  const choiceQuestion = question as ChoiceQuestion;
 
-  const handleAnswer = useCallback((answer: 'safe' | 'danger') => {
+  const getIsCorrect = (): boolean => {
+    if (isOXQuestion) {
+      return selectedAnswer === (oxQuestion.isDangerous ? 'danger' : 'safe');
+    }
+    return selectedAnswer === choiceQuestion.correctAnswer;
+  };
+
+  const isCorrect = getIsCorrect();
+
+  const getDeduction = (): number => {
+    if (isOXQuestion) {
+      return oxQuestion.isDangerous ? RISK_DEDUCTIONS[question.riskLevel] : 0;
+    }
+    return RISK_DEDUCTIONS[question.riskLevel];
+  };
+
+  const handleOXAnswer = useCallback((answer: 'safe' | 'danger') => {
     if (isAnswered) return;
     
     setSelectedAnswer(answer);
     setIsAnswered(true);
     
-    const correct = answer === (question.isDangerous ? 'danger' : 'safe');
-    const lostMoney = !correct && question.isDangerous ? RISK_DEDUCTIONS[question.riskLevel] : 0;
+    const correct = answer === (oxQuestion.isDangerous ? 'danger' : 'safe');
+    const lostMoney = !correct && oxQuestion.isDangerous ? RISK_DEDUCTIONS[question.riskLevel] : 0;
     
     if (correct) {
       playCorrectAnswerFeedback();
@@ -47,13 +63,35 @@ export default function QuizQuestion({
     }
     
     onAnswer(correct, lostMoney);
-  }, [isAnswered, question, onAnswer]);
+  }, [isAnswered, oxQuestion, question.riskLevel, onAnswer]);
+
+  const handleChoiceAnswer = useCallback((answerIndex: number) => {
+    if (isAnswered) return;
+    
+    setSelectedAnswer(answerIndex);
+    setIsAnswered(true);
+    
+    const correct = answerIndex === choiceQuestion.correctAnswer;
+    const lostMoney = !correct ? RISK_DEDUCTIONS[question.riskLevel] : 0;
+    
+    if (correct) {
+      playCorrectAnswerFeedback();
+    } else {
+      playWrongAnswerFeedback();
+    }
+    
+    onAnswer(correct, lostMoney);
+  }, [isAnswered, choiceQuestion, question.riskLevel, onAnswer]);
 
   const handleTimeUp = useCallback(() => {
     if (!isAnswered) {
-      handleAnswer('safe');
+      if (isOXQuestion) {
+        handleOXAnswer('safe');
+      } else {
+        handleChoiceAnswer(-1);
+      }
     }
-  }, [isAnswered, handleAnswer]);
+  }, [isAnswered, isOXQuestion, handleOXAnswer, handleChoiceAnswer]);
 
   const handleNext = () => {
     setSelectedAnswer(null);
@@ -68,7 +106,6 @@ export default function QuizQuestion({
         <span className="text-lg font-semibold text-muted-foreground">
           문제 {questionNumber}/{totalQuestions}
         </span>
-        <RiskBadge level={question.riskLevel} />
       </div>
 
       <TimerBar 
@@ -78,46 +115,78 @@ export default function QuizQuestion({
         onTimeUp={handleTimeUp}
       />
 
-      <MessageBubble 
-        message={question.message}
-        sender={question.sender}
-      />
+      {isOXQuestion ? (
+        <MessageBubble 
+          message={oxQuestion.message}
+          sender={oxQuestion.sender}
+        />
+      ) : (
+        <Card className="bg-primary/5 border-primary/20">
+          <CardContent className="p-6">
+            <p className="text-lg font-medium">{choiceQuestion.question}</p>
+          </CardContent>
+        </Card>
+      )}
 
-      <div className="grid grid-cols-2 gap-4">
-        <Button
-          size="lg"
-          variant="outline"
-          className={cn(
-            'h-16 text-lg gap-2 border-2',
-            selectedAnswer === 'safe' && isCorrect && 'bg-success text-success-foreground border-success',
-            selectedAnswer === 'safe' && !isCorrect && 'bg-destructive text-destructive-foreground border-destructive',
-            !isAnswered && 'hover:bg-success/10 hover:border-success hover:text-success'
-          )}
-          onClick={() => handleAnswer('safe')}
-          disabled={isAnswered}
-          data-testid="button-safe"
-        >
-          <ShieldCheck className="w-6 h-6" />
-          안전해요
-        </Button>
-        
-        <Button
-          size="lg"
-          variant="outline"
-          className={cn(
-            'h-16 text-lg gap-2 border-2',
-            selectedAnswer === 'danger' && isCorrect && 'bg-success text-success-foreground border-success',
-            selectedAnswer === 'danger' && !isCorrect && 'bg-destructive text-destructive-foreground border-destructive',
-            !isAnswered && 'hover:bg-destructive/10 hover:border-destructive hover:text-destructive'
-          )}
-          onClick={() => handleAnswer('danger')}
-          disabled={isAnswered}
-          data-testid="button-danger"
-        >
-          <ShieldAlert className="w-6 h-6" />
-          위험해요
-        </Button>
-      </div>
+      {isOXQuestion ? (
+        <div className="grid grid-cols-2 gap-4">
+          <Button
+            size="lg"
+            variant="outline"
+            className={cn(
+              'h-16 text-lg gap-2 border-2',
+              selectedAnswer === 'safe' && isCorrect && 'bg-success text-success-foreground border-success',
+              selectedAnswer === 'safe' && !isCorrect && 'bg-destructive text-destructive-foreground border-destructive',
+              !isAnswered && 'hover:bg-success/10 hover:border-success hover:text-success'
+            )}
+            onClick={() => handleOXAnswer('safe')}
+            disabled={isAnswered}
+            data-testid="button-safe"
+          >
+            <ShieldCheck className="w-6 h-6" />
+            안전해요
+          </Button>
+          
+          <Button
+            size="lg"
+            variant="outline"
+            className={cn(
+              'h-16 text-lg gap-2 border-2',
+              selectedAnswer === 'danger' && isCorrect && 'bg-success text-success-foreground border-success',
+              selectedAnswer === 'danger' && !isCorrect && 'bg-destructive text-destructive-foreground border-destructive',
+              !isAnswered && 'hover:bg-destructive/10 hover:border-destructive hover:text-destructive'
+            )}
+            onClick={() => handleOXAnswer('danger')}
+            disabled={isAnswered}
+            data-testid="button-danger"
+          >
+            <ShieldAlert className="w-6 h-6" />
+            위험해요
+          </Button>
+        </div>
+      ) : (
+        <div className="grid gap-3">
+          {choiceQuestion.choices.map((choice, index) => (
+            <Button
+              key={index}
+              size="lg"
+              variant="outline"
+              className={cn(
+                'h-auto min-h-14 text-left justify-start px-4 py-3 border-2 whitespace-normal',
+                isAnswered && index === choiceQuestion.correctAnswer && 'bg-success text-success-foreground border-success',
+                isAnswered && selectedAnswer === index && index !== choiceQuestion.correctAnswer && 'bg-destructive text-destructive-foreground border-destructive',
+                !isAnswered && 'hover:bg-primary/10 hover:border-primary'
+              )}
+              onClick={() => handleChoiceAnswer(index)}
+              disabled={isAnswered}
+              data-testid={`choice-${index}`}
+            >
+              <span className="font-bold mr-3">{index + 1}.</span>
+              {choice}
+            </Button>
+          ))}
+        </div>
+      )}
 
       {isAnswered && (
         <Card className={cn(
@@ -130,8 +199,8 @@ export default function QuizQuestion({
                 <>
                   <CheckCircle2 className="w-8 h-8 text-success" />
                   <div>
-                    <p className="text-xl font-bold text-success">잘 막았어요!</p>
-                    <p className="text-muted-foreground">돈을 지켰어요!</p>
+                    <p className="text-xl font-bold text-success">정답이에요!</p>
+                    <p className="text-muted-foreground">잘 알고 있네요!</p>
                   </div>
                 </>
               ) : (
@@ -139,11 +208,7 @@ export default function QuizQuestion({
                   <XCircle className="w-8 h-8 text-destructive" />
                   <div>
                     <p className="text-xl font-bold text-destructive">아쉬워요!</p>
-                    {question.isDangerous && (
-                      <p className="text-destructive font-semibold">
-                        -{RISK_DEDUCTIONS[question.riskLevel].toLocaleString()}원 손해를 봤어요
-                      </p>
-                    )}
+                    <p className="text-muted-foreground">다음엔 맞출 수 있어요!</p>
                   </div>
                 </>
               )}

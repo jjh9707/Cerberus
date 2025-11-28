@@ -3,27 +3,25 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { GameProvider, useGame } from "@/lib/GameContext";
+import { GameProvider } from "@/lib/GameContext";
 import Header from "@/components/Header";
 import Home from "@/pages/Home";
 import Learn from "@/pages/Learn";
 import Quiz from "@/pages/Quiz";
 import Deepvoice from "@/pages/Deepvoice";
-import Parents from "@/pages/Parents";
+import Feedback from "@/pages/Feedback";
 import NotFound from "@/pages/not-found";
 
 function AppContent() {
-  const { money, moneyChange } = useGame();
-
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <Header money={money} moneyChange={moneyChange} />
+      <Header />
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/learn" component={Learn} />
         <Route path="/learn/:moduleId" component={Quiz} />
         <Route path="/deepvoice" component={Deepvoice} />
-        <Route path="/parents" component={Parents} />
+        <Route path="/feedback" component={Feedback} />
         <Route component={NotFound} />
       </Switch>
       <footer className="py-6 border-t bg-muted/30">

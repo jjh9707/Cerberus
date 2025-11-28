@@ -1,22 +1,16 @@
-import { Shield, Home, BookOpen, Mic, Users } from 'lucide-react';
+import { Shield, Home, BookOpen, Mic, Bug } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
-import MoneyDisplay from './MoneyDisplay';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-interface HeaderProps {
-  money: number;
-  moneyChange: number | null;
-}
-
-export default function Header({ money, moneyChange }: HeaderProps) {
+export default function Header() {
   const [location] = useLocation();
 
   const navItems = [
     { path: '/', label: '홈', icon: Home },
     { path: '/learn', label: '학습', icon: BookOpen },
     { path: '/deepvoice', label: '딥보이스', icon: Mic },
-    { path: '/parents', label: '학부모', icon: Users },
+    { path: '/feedback', label: '의견보내기', icon: Bug },
   ];
 
   return (
@@ -47,12 +41,6 @@ export default function Header({ money, moneyChange }: HeaderProps) {
             </Link>
           ))}
         </nav>
-
-        <MoneyDisplay 
-          amount={money} 
-          moneyChange={moneyChange} 
-          size="md"
-        />
       </div>
 
       <nav className="md:hidden flex items-center justify-around border-t py-2 bg-background">

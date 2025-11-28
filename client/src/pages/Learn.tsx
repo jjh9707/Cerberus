@@ -12,11 +12,11 @@ export default function Learn() {
         <div className="text-center space-y-4 mb-12">
           <h1 className="text-3xl lg:text-4xl font-bold">학습 모듈</h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            배우고 싶은 모듈을 선택하세요. 각 모듈에서 실제 사기 사례를 바탕으로 한 문제를 풀어볼 수 있어요.
+            배우고 싶은 모듈을 선택하세요. 각 모듈에서 실제 사례를 바탕으로 한 문제를 풀어볼 수 있어요.
           </p>
         </div>
         
-        <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
           {MODULES.map((module) => (
             <ModuleCard
               key={module.id}
