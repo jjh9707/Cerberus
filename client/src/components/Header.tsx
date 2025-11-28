@@ -1,7 +1,46 @@
-import { Shield, Home, BookOpen, Mic, Bug } from 'lucide-react';
+import { Shield, Home, BookOpen, Mic, Bug, Wallet, TrendingDown } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useGame } from '@/lib/GameContext';
+
+function MoneyDisplay() {
+  const { money, moneyChange } = useGame();
+  
+  const formatMoney = (amount: number) => {
+    return new Intl.NumberFormat('ko-KR').format(amount);
+  };
+
+  return (
+    <div className="relative flex items-center gap-2" data-testid="money-display">
+      <div className={cn(
+        "flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all duration-300",
+        money > 50000 
+          ? "bg-success/10 border-success/30 text-success" 
+          : money > 20000 
+          ? "bg-warning/10 border-warning/30 text-warning"
+          : "bg-destructive/10 border-destructive/30 text-destructive"
+      )}>
+        <Wallet className="w-4 h-4" />
+        <span className="font-bold text-sm tabular-nums" data-testid="text-money-amount">
+          {formatMoney(money)}원
+        </span>
+      </div>
+      
+      {moneyChange !== null && moneyChange < 0 && (
+        <div 
+          className="absolute -bottom-8 right-0 flex items-center gap-1 text-destructive animate-money-decrease"
+          data-testid="text-money-change"
+        >
+          <TrendingDown className="w-4 h-4" />
+          <span className="font-bold text-sm">
+            {formatMoney(moneyChange)}원
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function Header() {
   const [location] = useLocation();
@@ -23,24 +62,32 @@ export default function Header() {
           </span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-1">
-          {navItems.map(({ path, label, icon: Icon }) => (
-            <Link key={path} href={path}>
-              <Button
-                variant={location === path ? 'secondary' : 'ghost'}
-                size="sm"
-                className={cn(
-                  'gap-2',
-                  location === path && 'bg-primary/10 text-primary'
-                )}
-                data-testid={`nav-${label}`}
-              >
-                <Icon className="w-4 h-4" />
-                {label}
-              </Button>
-            </Link>
-          ))}
-        </nav>
+        <div className="hidden md:flex items-center gap-4">
+          <nav className="flex items-center gap-1">
+            {navItems.map(({ path, label, icon: Icon }) => (
+              <Link key={path} href={path}>
+                <Button
+                  variant={location === path ? 'secondary' : 'ghost'}
+                  size="sm"
+                  className={cn(
+                    'gap-2',
+                    location === path && 'bg-primary/10 text-primary'
+                  )}
+                  data-testid={`nav-${label}`}
+                >
+                  <Icon className="w-4 h-4" />
+                  {label}
+                </Button>
+              </Link>
+            ))}
+          </nav>
+          
+          <MoneyDisplay />
+        </div>
+        
+        <div className="md:hidden">
+          <MoneyDisplay />
+        </div>
       </div>
 
       <nav className="md:hidden flex items-center justify-around border-t py-2 bg-background">

@@ -23,12 +23,34 @@ export default function Feedback() {
     
     setIsSubmitting(true);
     
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    console.log('Feedback submitted:', { feedbackType, title, content, email });
-    
-    setIsSubmitted(true);
-    setIsSubmitting(false);
+    try {
+      const response = await fetch('/api/feedback', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: feedbackType,
+          title: title.trim(),
+          content: content.trim(),
+          email: email.trim() || undefined,
+        }),
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        setIsSubmitted(true);
+      } else {
+        console.error('Feedback submission failed:', result.message);
+        alert(result.message || '피드백 전송에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('Feedback submission error:', error);
+      alert('피드백 전송 중 오류가 발생했습니다.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleReset = () => {
