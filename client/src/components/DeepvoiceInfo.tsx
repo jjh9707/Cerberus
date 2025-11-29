@@ -1,9 +1,13 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Mic, Volume2, ShieldCheck, AlertTriangle, Lock, ArrowLeft } from 'lucide-react';
+import { Mic, Volume2, ShieldCheck, AlertTriangle, Lock, ArrowLeft, ArrowRight } from 'lucide-react';
 import { Link } from 'wouter';
 
-export default function DeepvoiceInfo() {
+interface DeepvoiceInfoProps {
+  onStartExperience?: () => void;
+}
+
+export default function DeepvoiceInfo({ onStartExperience }: DeepvoiceInfoProps) {
   return (
     <div className="w-full max-w-4xl mx-auto space-y-8">
       <div className="text-center space-y-4">
@@ -76,11 +80,12 @@ export default function DeepvoiceInfo() {
           <Button 
             size="lg" 
             className="w-full gap-2"
-            onClick={() => alert('딥보이스 체험 기능은 곧 추가될 예정이에요!\n\n여러분의 목소리를 녹음해서 다른 문장을 말하는 것처럼 들려드릴 거예요!')}
+            onClick={onStartExperience}
             data-testid="button-deepvoice-demo"
           >
             <Mic className="w-5 h-5" />
-            체험 시작하기 (준비 중)
+            체험 시작하기
+            <ArrowRight className="w-5 h-5" />
           </Button>
         </CardContent>
       </Card>

@@ -114,6 +114,19 @@ Preferred communication style: Simple, everyday language.
 - **cmdk**: Command menu interface component
 - **embla-carousel-react**: Touch-friendly carousel component
 
+### DeepVoice (Voice Cloning) Feature
+- **ElevenLabs API**: Voice cloning and text-to-speech for educational deepfake demonstration
+- **POST /api/convert-voice**: Backend endpoint for voice conversion
+  - Accepts audio file (webm) and text via FormData
+  - Creates temporary voice clone, generates TTS, deletes clone immediately
+  - Returns converted audio as audio/mpeg
+- **Environment Variable**: `ELEVENLABS_API_KEY` required for API access
+- **Privacy Protection**: Voice clones are deleted from ElevenLabs immediately after use, temp files deleted from server
+
+### Feedback System
+- **POST /api/feedback**: Submits user feedback to Google Sheets
+- **Environment Variable**: `GOOGLE_SHEETS_SCRIPT_URL` for Google Apps Script web app
+
 ### Potential Future Integrations
 The package.json includes several dependencies that suggest planned features:
 - **Stripe**: Payment processing (not currently implemented)
@@ -121,4 +134,4 @@ The package.json includes several dependencies that suggest planned features:
 - **OpenAI/Google Generative AI**: AI integration possibilities
 - **JWT**: Token-based authentication
 - **Express Rate Limit**: API rate limiting
-- **Multer**: File upload handling
+- **Multer**: File upload handling (used for voice conversion)

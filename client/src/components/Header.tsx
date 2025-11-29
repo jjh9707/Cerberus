@@ -62,32 +62,25 @@ export default function Header() {
           </span>
         </Link>
 
-        <div className="hidden md:flex items-center gap-4">
-          <nav className="flex items-center gap-1">
-            {navItems.map(({ path, label, icon: Icon }) => (
-              <Link key={path} href={path}>
-                <Button
-                  variant={location === path ? 'secondary' : 'ghost'}
-                  size="sm"
-                  className={cn(
-                    'gap-2',
-                    location === path && 'bg-primary/10 text-primary'
-                  )}
-                  data-testid={`nav-${label}`}
-                >
-                  <Icon className="w-4 h-4" />
-                  {label}
-                </Button>
-              </Link>
-            ))}
-          </nav>
-          
-          <MoneyDisplay />
-        </div>
+        <nav className="hidden md:flex items-center justify-center flex-1 gap-2">
+          {navItems.map(({ path, label, icon: Icon }) => (
+            <Link key={path} href={path}>
+              <Button
+                variant={location === path ? 'secondary' : 'ghost'}
+                className={cn(
+                  'gap-2 text-base px-5 py-2',
+                  location === path && 'bg-primary/10 text-primary'
+                )}
+                data-testid={`nav-${label}`}
+              >
+                <Icon className="w-5 h-5" />
+                {label}
+              </Button>
+            </Link>
+          ))}
+        </nav>
         
-        <div className="md:hidden">
-          <MoneyDisplay />
-        </div>
+        <MoneyDisplay />
       </div>
 
       <nav className="md:hidden flex items-center justify-around border-t py-2 bg-background">
