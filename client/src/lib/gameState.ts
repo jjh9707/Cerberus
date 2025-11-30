@@ -45,7 +45,11 @@ export interface ModuleState {
   correctAnswers: number;
   incorrectAnswers: number;
   answeredQuestions: string[];
-  answerHistory: { questionId: string; isCorrect: boolean; deduction: number }[];
+  answerHistory: {
+    questionId: string;
+    isCorrect: boolean;
+    deduction: number;
+  }[];
   completed: boolean;
   lastPlayedAt: string | null;
 }
@@ -205,7 +209,7 @@ export const QUESTIONS: Question[] = [
       "절대 만나지 않고 부모님께 알린다",
       "친구랑 같이 가면 안전하다",
     ],
-    correctAnswer: 3,
+    correctAnswer: 2,
     riskLevel: "high",
     explanation:
       "친구와 함께 만나는 것이라도 인터넷에서 만난 사람을 실제로 만나는 것은 위험해요!",
@@ -663,12 +667,12 @@ export const QUESTIONS: Question[] = [
     id: "digital-10",
     type: "ox",
     message:
-      "[국민건강보험] 건강검진 결과 이상 발견. 즉시 확인 → bit.ly/health-check",
+      "[학교 급식실] 이번 주 급식표가 변경되었습니다. 확인하려면 눌러 주세요. → bit.ly/health-check",
     sender: "1577-1000",
     isDangerous: true,
     riskLevel: "high",
     explanation:
-      "공공기관을 사칭한 스미싱이에요! 국민건강보험공단은 문자로 링크를 보내지 않아요. 공식 앱이나 홈페이지에서 확인하세요.",
+      "학교에서 온 것처럼 보이지만 스미싱이에요. 학교는 이런 식으로 링크를 보내지 않아요.",
     category: "digital",
   },
   {
@@ -719,8 +723,7 @@ export const QUESTIONS: Question[] = [
   {
     id: "digital-14",
     type: "choice",
-    question:
-      "공공 와이파이(카페, 지하철)를 사용할 때 주의할 점이 아닌 것은?",
+    question: "공공 와이파이(카페, 지하철)를 사용할 때 주의할 점이 아닌 것은?",
     choices: [
       "금융 앱 사용을 피한다",
       "중요한 비밀번호 입력을 피한다",
@@ -791,7 +794,10 @@ function loadModuleState(moduleId: string): ModuleState {
 
 function saveModuleState(moduleId: string, state: ModuleState): void {
   try {
-    localStorage.setItem(`${MODULE_STORAGE_PREFIX}${moduleId}`, JSON.stringify(state));
+    localStorage.setItem(
+      `${MODULE_STORAGE_PREFIX}${moduleId}`,
+      JSON.stringify(state),
+    );
   } catch (e) {
     console.error("Failed to save module state:", e);
   }
@@ -829,7 +835,8 @@ function saveGameState(state: GameState): void {
 
 export function useGameState() {
   const [state, setState] = useState<GameState>(loadGameState);
-  const [currentModuleState, setCurrentModuleState] = useState<ModuleState | null>(null);
+  const [currentModuleState, setCurrentModuleState] =
+    useState<ModuleState | null>(null);
   const [activeModuleId, setActiveModuleId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -846,7 +853,7 @@ export function useGameState() {
     const moduleState = loadModuleState(moduleId);
     setActiveModuleId(moduleId);
     setCurrentModuleState(moduleState);
-    setState(prev => ({ ...prev, currentModule: moduleId }));
+    setState((prev) => ({ ...prev, currentModule: moduleId }));
     return moduleState;
   }, []);
 
@@ -863,36 +870,46 @@ export function useGameState() {
   }, []);
 
   const deductModuleMoney = useCallback((amount: number) => {
-    setCurrentModuleState(prev => {
+    setCurrentModuleState((prev) => {
       if (!prev) return prev;
       const newMoney = Math.max(0, prev.money - amount);
       return { ...prev, money: newMoney };
     });
   }, []);
 
-  const recordAnswer = useCallback((questionId: string, isCorrect: boolean, deduction: number) => {
-    setCurrentModuleState(prev => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        correctAnswers: isCorrect ? prev.correctAnswers + 1 : prev.correctAnswers,
-        incorrectAnswers: !isCorrect ? prev.incorrectAnswers + 1 : prev.incorrectAnswers,
-        answeredQuestions: [...prev.answeredQuestions, questionId],
-        answerHistory: [...prev.answerHistory, { questionId, isCorrect, deduction }],
-        money: isCorrect ? prev.money : Math.max(0, prev.money - deduction),
-      };
-    });
-  }, []);
+  const recordAnswer = useCallback(
+    (questionId: string, isCorrect: boolean, deduction: number) => {
+      setCurrentModuleState((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          correctAnswers: isCorrect
+            ? prev.correctAnswers + 1
+            : prev.correctAnswers,
+          incorrectAnswers: !isCorrect
+            ? prev.incorrectAnswers + 1
+            : prev.incorrectAnswers,
+          answeredQuestions: [...prev.answeredQuestions, questionId],
+          answerHistory: [
+            ...prev.answerHistory,
+            { questionId, isCorrect, deduction },
+          ],
+          money: isCorrect ? prev.money : Math.max(0, prev.money - deduction),
+        };
+      });
+    },
+    [],
+  );
 
   const updateCurrentQuestion = useCallback((index: number) => {
-    setCurrentModuleState(prev => {
+    setCurrentModuleState((prev) => {
       if (!prev) return prev;
       return { ...prev, currentQuestionIndex: index };
     });
   }, []);
 
   const completeModule = useCallback((moduleId: string) => {
-    setCurrentModuleState(prev => {
+    setCurrentModuleState((prev) => {
       if (!prev) return prev;
       const completedState = {
         ...prev,
@@ -900,8 +917,8 @@ export function useGameState() {
         lastPlayedAt: new Date().toISOString(),
       };
       saveModuleState(moduleId, completedState);
-      
-      setState(s => ({
+
+      setState((s) => ({
         ...s,
         moduleProgress: {
           ...s.moduleProgress,
@@ -913,7 +930,7 @@ export function useGameState() {
           },
         },
       }));
-      
+
       return completedState;
     });
   }, []);
@@ -923,18 +940,18 @@ export function useGameState() {
   }, [currentModuleState]);
 
   const completeTutorial = useCallback(() => {
-    setState(prev => ({ ...prev, tutorialCompleted: true }));
+    setState((prev) => ({ ...prev, tutorialCompleted: true }));
   }, []);
 
   const deductMoney = useCallback((amount: number) => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       money: Math.max(0, prev.money - amount),
     }));
   }, []);
 
   const markQuestionAnswered = useCallback((questionId: string) => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       answeredQuestions: [...prev.answeredQuestions, questionId],
     }));
@@ -942,7 +959,7 @@ export function useGameState() {
 
   const updateModuleProgress = useCallback(
     (moduleId: string, correctAnswers: number, totalQuestions: number) => {
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         moduleProgress: {
           ...prev.moduleProgress,
@@ -955,19 +972,22 @@ export function useGameState() {
         },
       }));
     },
-    []
+    [],
   );
 
   const resetGame = useCallback(() => {
     setState(getDefaultGameState());
   }, []);
 
-  const getModuleProgress = useCallback((moduleId: string): ModuleProgress | null => {
-    return state.moduleProgress[moduleId] || null;
-  }, [state.moduleProgress]);
+  const getModuleProgress = useCallback(
+    (moduleId: string): ModuleProgress | null => {
+      return state.moduleProgress[moduleId] || null;
+    },
+    [state.moduleProgress],
+  );
 
   const getCurrentModuleId = useCallback((): string | null => {
-    const moduleIds = ['safety', 'scam', 'digital', 'practice'];
+    const moduleIds = ["safety", "scam", "digital", "practice"];
     for (const id of moduleIds) {
       const moduleState = loadModuleState(id);
       if (moduleState.currentQuestionIndex > 0 && !moduleState.completed) {
@@ -984,10 +1004,10 @@ export function useGameState() {
     tutorialCompleted: state.tutorialCompleted,
     moduleProgress: state.moduleProgress,
     currentModule: getCurrentModuleId(),
-    
+
     currentModuleState,
     activeModuleId,
-    
+
     initModule,
     resetModuleProgress,
     getModuleState,
@@ -997,7 +1017,7 @@ export function useGameState() {
     updateCurrentQuestion,
     completeModule,
     isModuleBankrupt,
-    
+
     deductMoney,
     markQuestionAnswered,
     updateModuleProgress,

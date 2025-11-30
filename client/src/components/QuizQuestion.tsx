@@ -1,12 +1,53 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ShieldCheck, ShieldAlert, CheckCircle2, XCircle, ArrowRight } from 'lucide-react';
+import { ShieldCheck, ShieldAlert, CheckCircle2, XCircle, ArrowRight, Wallet, TrendingDown } from 'lucide-react';
 import MessageBubble from './MessageBubble';
 import TimerBar from './TimerBar';
 import { type Question, type OXQuestion, type ChoiceQuestion, RISK_DEDUCTIONS } from '@/lib/gameState';
 import { playCorrectAnswerFeedback, playWrongAnswerFeedback } from '@/lib/sounds';
 import { cn } from '@/lib/utils';
+
+interface MoneyDisplayProps {
+  money: number;
+  moneyChange: number | null;
+}
+
+function QuizMoneyDisplay({ money, moneyChange }: MoneyDisplayProps) {
+  const formatMoney = (amount: number) => {
+    return new Intl.NumberFormat('ko-KR').format(amount);
+  };
+
+  return (
+    <div className="relative flex items-center gap-2" data-testid="quiz-money-display">
+      <div className={cn(
+        "flex items-center gap-2 px-4 py-2 rounded-xl border-2 transition-all duration-300",
+        money > 50000 
+          ? "bg-success/10 border-success/30 text-success" 
+          : money > 20000 
+          ? "bg-warning/10 border-warning/30 text-warning"
+          : "bg-destructive/10 border-destructive/30 text-destructive"
+      )}>
+        <Wallet className="w-5 h-5" />
+        <span className="font-bold text-lg tabular-nums" data-testid="text-quiz-money">
+          {formatMoney(money)}원
+        </span>
+      </div>
+      
+      {moneyChange !== null && moneyChange < 0 && (
+        <div 
+          className="absolute -bottom-7 right-0 flex items-center gap-1 text-destructive animate-pulse"
+          data-testid="text-quiz-money-change"
+        >
+          <TrendingDown className="w-4 h-4" />
+          <span className="font-bold text-sm">
+            {formatMoney(moneyChange)}원
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
 
 interface QuizQuestionProps {
   question: Question;
@@ -19,7 +60,7 @@ interface QuizQuestionProps {
 
 export default function QuizQuestion({
   question,
-  currentMoney,
+  currentMoney = 100000,
   onAnswer,
   onNext,
   questionNumber,
@@ -28,6 +69,19 @@ export default function QuizQuestion({
   const [selectedAnswer, setSelectedAnswer] = useState<string | number | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);
   const [timerKey, setTimerKey] = useState(0);
+  const [displayMoney, setDisplayMoney] = useState(currentMoney);
+  const [moneyChange, setMoneyChange] = useState<number | null>(null);
+
+  useEffect(() => {
+    setDisplayMoney(currentMoney);
+  }, [currentMoney]);
+
+  useEffect(() => {
+    if (moneyChange !== null) {
+      const timer = setTimeout(() => setMoneyChange(null), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [moneyChange]);
 
   const isOXQuestion = question.type === 'ox';
   const oxQuestion = question as OXQuestion;
@@ -62,6 +116,10 @@ export default function QuizQuestion({
       playCorrectAnswerFeedback();
     } else {
       playWrongAnswerFeedback();
+      if (lostMoney > 0) {
+        setMoneyChange(-lostMoney);
+        setDisplayMoney(prev => Math.max(0, prev - lostMoney));
+      }
     }
     
     onAnswer(correct, lostMoney);
@@ -80,6 +138,10 @@ export default function QuizQuestion({
       playCorrectAnswerFeedback();
     } else {
       playWrongAnswerFeedback();
+      if (lostMoney > 0) {
+        setMoneyChange(-lostMoney);
+        setDisplayMoney(prev => Math.max(0, prev - lostMoney));
+      }
     }
     
     onAnswer(correct, lostMoney);
@@ -104,10 +166,11 @@ export default function QuizQuestion({
 
   return (
     <div className="w-full max-w-2xl mx-auto space-y-6 animate-fade-in-up">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center pb-2">
         <span className="text-lg font-semibold text-muted-foreground">
           문제 {questionNumber}/{totalQuestions}
         </span>
+        <QuizMoneyDisplay money={displayMoney} moneyChange={moneyChange} />
       </div>
 
       <TimerBar 

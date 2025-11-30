@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, ArrowLeft, type LucideIcon, Coins, Clock, AlertTriangle, Play, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, ArrowLeft, type LucideIcon, Coins, Clock, Play, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface CurrentProgress {
@@ -101,7 +101,7 @@ export default function ModuleIntro({
             </Card>
           )}
 
-          <div className="grid grid-cols-3 gap-4 py-4">
+          <div className="grid grid-cols-2 gap-4 py-4">
             <div className="text-center p-3 rounded-lg bg-muted">
               <Clock className="w-6 h-6 mx-auto mb-1 text-primary" />
               <div className="text-lg font-bold">{questionCount}문제</div>
@@ -111,11 +111,6 @@ export default function ModuleIntro({
               <Coins className="w-6 h-6 mx-auto mb-1 text-warning" />
               <div className="text-lg font-bold">30초</div>
               <div className="text-xs text-muted-foreground">문제당 시간</div>
-            </div>
-            <div className="text-center p-3 rounded-lg bg-muted">
-              <AlertTriangle className="w-6 h-6 mx-auto mb-1 text-destructive" />
-              <div className="text-lg font-bold">최대 50,000원</div>
-              <div className="text-xs text-muted-foreground">위험 차감</div>
             </div>
           </div>
 
