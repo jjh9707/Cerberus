@@ -194,39 +194,40 @@ export default function QuizQuestion({
           isCorrect ? 'border-l-success bg-success/5' : 'border-l-destructive bg-destructive/5'
         )}>
           <CardContent className="p-6 space-y-4">
-            <div className="flex items-center gap-3">
-              {isCorrect ? (
-                <>
-                  <CheckCircle2 className="w-8 h-8 text-success" />
-                  <div>
-                    <p className="text-xl font-bold text-success">정답이에요!</p>
-                    <p className="text-muted-foreground">잘 알고 있네요!</p>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <XCircle className="w-8 h-8 text-destructive" />
-                  <div>
-                    <p className="text-xl font-bold text-destructive">아쉬워요!</p>
-                    <p className="text-muted-foreground">다음엔 맞출 수 있어요!</p>
-                  </div>
-                </>
-              )}
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                {isCorrect ? (
+                  <>
+                    <CheckCircle2 className="w-8 h-8 text-success" />
+                    <div>
+                      <p className="text-xl font-bold text-success">정답이에요!</p>
+                      <p className="text-muted-foreground">잘 알고 있네요!</p>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <XCircle className="w-8 h-8 text-destructive" />
+                    <div>
+                      <p className="text-xl font-bold text-destructive">아쉬워요!</p>
+                      <p className="text-muted-foreground">다음엔 맞출 수 있어요!</p>
+                    </div>
+                  </>
+                )}
+              </div>
+              <Button 
+                className="gap-2 shrink-0" 
+                size="default"
+                onClick={handleNext}
+                data-testid="button-next"
+              >
+                다음
+                <ArrowRight className="w-4 h-4" />
+              </Button>
             </div>
             
             <div className="bg-background rounded-lg p-4">
               <p className="text-base leading-relaxed">{question.explanation}</p>
             </div>
-
-            <Button 
-              className="w-full gap-2" 
-              size="lg"
-              onClick={handleNext}
-              data-testid="button-next"
-            >
-              다음 문제
-              <ArrowRight className="w-5 h-5" />
-            </Button>
           </CardContent>
         </Card>
       )}
