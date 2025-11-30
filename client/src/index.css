@@ -2,63 +2,79 @@
 @tailwind components;
 @tailwind utilities;
 
-/* LIGHT MODE - FilterOn Child-Friendly Theme */
+/* LIGHT MODE - FilterOn Sophisticated Pastel Theme for Students */
 :root {
-  --button-outline: rgba(0,0,0, .10);
+  --button-outline: rgba(0,0,0, .08);
   --badge-outline: rgba(0,0,0, .05);
-  --opaque-button-border-intensity: -8;
-  --elevate-1: rgba(0,0,0, .03);
+  --opaque-button-border-intensity: -6;
+  --elevate-1: rgba(0,0,0, .04);
   --elevate-2: rgba(0,0,0, .08);
-  --background: 210 40% 98%;
-  --foreground: 220 20% 20%;
-  --border: 210 20% 88%;
+  /* Main Background: Clean White/Light Gray */
+  --background: 210 17% 98%;
+  /* Text: Soft Dark Gray #2d3748 */
+  --foreground: 220 26% 23%;
+  --border: 194 30% 88%;
+  /* Card: Pure White */
   --card: 0 0% 100%;
-  --card-foreground: 220 20% 20%;
-  --card-border: 210 20% 90%;
-  --sidebar: 210 30% 96%;
-  --sidebar-foreground: 220 20% 20%;
-  --sidebar-border: 210 20% 88%;
-  --sidebar-primary: 210 90% 55%;
-  --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 210 30% 88%;
-  --sidebar-accent-foreground: 220 20% 25%;
-  --sidebar-ring: 210 90% 55%;
+  --card-foreground: 220 26% 23%;
+  --card-border: 194 30% 90%;
+  /* Sidebar: Cream Beige inspired #fff8dc */
+  --sidebar: 54 60% 96%;
+  --sidebar-foreground: 220 26% 23%;
+  --sidebar-border: 54 40% 88%;
+  /* Sidebar Primary: Mint Green #b4ebae */
+  --sidebar-primary: 115 56% 70%;
+  --sidebar-primary-foreground: 220 26% 20%;
+  --sidebar-accent: 115 40% 88%;
+  --sidebar-accent-foreground: 220 26% 25%;
+  --sidebar-ring: 115 56% 70%;
   --popover: 0 0% 100%;
-  --popover-foreground: 220 20% 20%;
-  --popover-border: 210 20% 88%;
-  --primary: 210 90% 55%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 150 60% 45%;
-  --secondary-foreground: 0 0% 100%;
-  --muted: 210 20% 92%;
-  --muted-foreground: 220 15% 40%;
-  --accent: 35 95% 55%;
-  --accent-foreground: 35 90% 15%;
-  --destructive: 0 75% 50%;
+  --popover-foreground: 220 26% 23%;
+  --popover-border: 194 30% 88%;
+  /* Primary: Mint Green #b4ebae */
+  --primary: 115 56% 65%;
+  --primary-foreground: 220 26% 18%;
+  /* Secondary: Sky Blue #a8d5e2 */
+  --secondary: 194 47% 72%;
+  --secondary-foreground: 220 26% 18%;
+  /* Muted: Lavender inspired #e8d5f2 */
+  --muted: 278 35% 92%;
+  --muted-foreground: 220 20% 40%;
+  /* Accent: Coral #ffd7ba */
+  --accent: 27 100% 86%;
+  --accent-foreground: 27 60% 25%;
+  --destructive: 0 70% 55%;
   --destructive-foreground: 0 0% 100%;
-  --input: 210 20% 70%;
-  --ring: 210 90% 55%;
-  --chart-1: 210 90% 55%;
-  --chart-2: 150 60% 45%;
-  --chart-3: 35 95% 55%;
-  --chart-4: 280 70% 55%;
-  --chart-5: 340 75% 55%;
-  --success: 150 60% 45%;
-  --success-foreground: 0 0% 100%;
-  --warning: 35 95% 55%;
-  --warning-foreground: 35 90% 15%;
-  --font-sans: Nunito, sans-serif;
+  --input: 194 30% 75%;
+  --ring: 115 56% 65%;
+  /* Chart Colors - Pastel Palette */
+  --chart-1: 115 56% 70%;
+  --chart-2: 194 47% 72%;
+  --chart-3: 27 100% 80%;
+  --chart-4: 278 47% 75%;
+  --chart-5: 88 51% 70%;
+  /* Success: Lime Green #c5e1a5 */
+  --success: 88 51% 65%;
+  --success-foreground: 88 50% 18%;
+  /* Warning: Coral #ffd7ba */
+  --warning: 27 100% 80%;
+  --warning-foreground: 27 60% 25%;
+  /* Fonts: Clean Korean Typography */
+  --font-sans: 'Noto Sans KR', 'Pretendard', sans-serif;
+  --font-heading: 'Jua', 'Black Han Sans', sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: Menlo, monospace;
-  --radius: .75rem;
-  --shadow-2xs: 0px 2px 0px 0px hsl(220 10% 15% / 0.00);
-  --shadow-xs: 0px 2px 0px 0px hsl(220 10% 15% / 0.00);
-  --shadow-sm: 0px 2px 0px 0px hsl(220 10% 15% / 0.00), 0px 1px 2px -1px hsl(220 10% 15% / 0.00);
-  --shadow: 0px 2px 0px 0px hsl(220 10% 15% / 0.00), 0px 1px 2px -1px hsl(220 10% 15% / 0.00);
-  --shadow-md: 0px 2px 0px 0px hsl(220 10% 15% / 0.00), 0px 2px 4px -1px hsl(220 10% 15% / 0.00);
-  --shadow-lg: 0px 2px 0px 0px hsl(220 10% 15% / 0.00), 0px 4px 6px -1px hsl(220 10% 15% / 0.00);
-  --shadow-xl: 0px 2px 0px 0px hsl(220 10% 15% / 0.00), 0px 8px 10px -1px hsl(220 10% 15% / 0.00);
-  --shadow-2xl: 0px 2px 0px 0px hsl(220 10% 15% / 0.00);
+  /* Larger border radius for friendly feel */
+  --radius: 1rem;
+  /* Subtle shadows for depth */
+  --shadow-2xs: 0px 1px 2px 0px rgba(0,0,0,0.05);
+  --shadow-xs: 0px 1px 3px 0px rgba(0,0,0,0.08);
+  --shadow-sm: 0px 2px 4px 0px rgba(0,0,0,0.08);
+  --shadow: 0px 2px 8px 0px rgba(0,0,0,0.10);
+  --shadow-md: 0px 4px 12px 0px rgba(0,0,0,0.10);
+  --shadow-lg: 0px 6px 16px 0px rgba(0,0,0,0.12);
+  --shadow-xl: 0px 8px 24px 0px rgba(0,0,0,0.14);
+  --shadow-2xl: 0px 12px 32px 0px rgba(0,0,0,0.16);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
 
@@ -94,55 +110,66 @@
 .dark {
   --button-outline: rgba(255,255,255, .10);
   --badge-outline: rgba(255,255,255, .05);
-  --opaque-button-border-intensity: 9;
-  --elevate-1: rgba(255,255,255, .04);
-  --elevate-2: rgba(255,255,255, .09);
-  --background: 220 25% 10%;
-  --foreground: 210 20% 95%;
+  --opaque-button-border-intensity: 8;
+  --elevate-1: rgba(255,255,255, .05);
+  --elevate-2: rgba(255,255,255, .10);
+  /* Dark mode: Deep but warm background */
+  --background: 220 20% 12%;
+  --foreground: 210 25% 92%;
   --border: 220 15% 22%;
-  --card: 220 20% 14%;
-  --card-foreground: 210 20% 95%;
-  --card-border: 220 15% 18%;
-  --sidebar: 220 20% 12%;
-  --sidebar-foreground: 210 20% 95%;
-  --sidebar-border: 220 15% 18%;
-  --sidebar-primary: 210 90% 60%;
+  --card: 220 18% 16%;
+  --card-foreground: 210 25% 92%;
+  --card-border: 220 15% 20%;
+  /* Sidebar: Slightly warmer dark */
+  --sidebar: 220 18% 14%;
+  --sidebar-foreground: 210 25% 92%;
+  --sidebar-border: 220 15% 20%;
+  /* Sidebar Primary: Mint Green adjusted for dark */
+  --sidebar-primary: 115 50% 55%;
   --sidebar-primary-foreground: 0 0% 100%;
   --sidebar-accent: 220 15% 22%;
-  --sidebar-accent-foreground: 210 20% 90%;
-  --sidebar-ring: 210 90% 60%;
-  --popover: 220 20% 16%;
-  --popover-foreground: 210 20% 95%;
+  --sidebar-accent-foreground: 210 25% 88%;
+  --sidebar-ring: 115 50% 55%;
+  --popover: 220 18% 18%;
+  --popover-foreground: 210 25% 92%;
   --popover-border: 220 15% 22%;
-  --primary: 210 90% 60%;
+  /* Primary: Mint Green for dark mode */
+  --primary: 115 50% 55%;
   --primary-foreground: 0 0% 100%;
-  --secondary: 150 55% 40%;
+  /* Secondary: Sky Blue for dark mode */
+  --secondary: 194 45% 55%;
   --secondary-foreground: 0 0% 100%;
-  --muted: 220 15% 18%;
-  --muted-foreground: 210 15% 65%;
-  --accent: 35 85% 50%;
-  --accent-foreground: 35 90% 95%;
-  --destructive: 0 70% 50%;
+  /* Muted: Dark Lavender */
+  --muted: 278 15% 20%;
+  --muted-foreground: 278 15% 65%;
+  /* Accent: Coral for dark mode */
+  --accent: 27 80% 60%;
+  --accent-foreground: 27 90% 95%;
+  --destructive: 0 65% 50%;
   --destructive-foreground: 0 0% 100%;
-  --input: 220 15% 30%;
-  --ring: 210 90% 60%;
-  --chart-1: 210 90% 65%;
-  --chart-2: 150 60% 55%;
-  --chart-3: 35 90% 60%;
-  --chart-4: 280 70% 65%;
-  --chart-5: 340 75% 65%;
-  --success: 150 55% 40%;
+  --input: 220 15% 28%;
+  --ring: 115 50% 55%;
+  /* Chart Colors - Pastel for dark mode */
+  --chart-1: 115 50% 55%;
+  --chart-2: 194 45% 55%;
+  --chart-3: 27 80% 60%;
+  --chart-4: 278 50% 60%;
+  --chart-5: 88 45% 55%;
+  /* Success: Lime Green for dark */
+  --success: 88 45% 50%;
   --success-foreground: 0 0% 100%;
-  --warning: 35 85% 50%;
-  --warning-foreground: 35 90% 95%;
-  --shadow-2xs: 0px 2px 0px 0px hsl(220 5% 95% / 0.00);
-  --shadow-xs: 0px 2px 0px 0px hsl(220 5% 95% / 0.00);
-  --shadow-sm: 0px 2px 0px 0px hsl(220 5% 95% / 0.00), 0px 1px 2px -1px hsl(220 5% 95% / 0.00);
-  --shadow: 0px 2px 0px 0px hsl(220 5% 95% / 0.00), 0px 1px 2px -1px hsl(220 5% 95% / 0.00);
-  --shadow-md: 0px 2px 0px 0px hsl(220 5% 95% / 0.00), 0px 2px 4px -1px hsl(220 5% 95% / 0.00);
-  --shadow-lg: 0px 2px 0px 0px hsl(220 5% 95% / 0.00), 0px 4px 6px -1px hsl(220 5% 95% / 0.00);
-  --shadow-xl: 0px 2px 0px 0px hsl(220 5% 95% / 0.00), 0px 8px 10px -1px hsl(220 5% 95% / 0.00);
-  --shadow-2xl: 0px 2px 0px 0px hsl(220 5% 95% / 0.00);
+  /* Warning: Coral for dark */
+  --warning: 27 80% 55%;
+  --warning-foreground: 27 90% 95%;
+  /* Shadows: Subtle glow effect in dark mode */
+  --shadow-2xs: 0px 1px 2px 0px rgba(0,0,0,0.3);
+  --shadow-xs: 0px 1px 3px 0px rgba(0,0,0,0.35);
+  --shadow-sm: 0px 2px 4px 0px rgba(0,0,0,0.4);
+  --shadow: 0px 2px 8px 0px rgba(0,0,0,0.45);
+  --shadow-md: 0px 4px 12px 0px rgba(0,0,0,0.5);
+  --shadow-lg: 0px 6px 16px 0px rgba(0,0,0,0.55);
+  --shadow-xl: 0px 8px 24px 0px rgba(0,0,0,0.6);
+  --shadow-2xl: 0px 12px 32px 0px rgba(0,0,0,0.65);
 
 /* Fallback for older browsers */
   --sidebar-primary-border: hsl(var(--sidebar-primary));
@@ -293,6 +320,34 @@
   .border.hover-elevate:not(.no-hover-interaction-elevate)::after {
     inset: -1px;
   }
+}
+
+/* Button hover effect - smooth lift animation */
+button, [role="button"], .btn {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+button:hover:not(:disabled), [role="button"]:hover:not(:disabled), .btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+button:active:not(:disabled), [role="button"]:active:not(:disabled), .btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Card hover effect */
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Heading font utility class */
+.font-heading {
+  font-family: var(--font-heading);
 }
 
 /* FilterOn Custom Animations */
