@@ -56,8 +56,8 @@ export default function Header() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 items-center justify-between gap-4 px-4">
         <Link href="/" className="flex items-center gap-2 hover-elevate rounded-md px-2 py-1" data-testid="link-home">
-          <Shield className="h-7 w-7 text-primary" />
-          <span className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          <Shield className="h-7 w-7" style={{ color: '#4ade80' }} />
+          <span className="text-xl font-bold" style={{ color: '#16a34a' }}>
             필터온
           </span>
         </Link>

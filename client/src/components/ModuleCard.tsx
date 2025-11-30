@@ -35,7 +35,7 @@ export const MODULES: ModuleInfo[] = [
     title: "안전 지키기",
     description: "유괴 예방과 그루밍(온라인 유인)을 알아보고 스스로를 지켜요!",
     icon: ShieldAlert,
-    color: "bg-red-500",
+    color: "#ed7272",
     questionCount: 15,
   },
   {
@@ -43,7 +43,7 @@ export const MODULES: ModuleInfo[] = [
     title: "사기 피하기",
     description: "게임 아이템 사기와 도박의 위험성을 배워요!",
     icon: Gamepad2,
-    color: "bg-orange-500",
+    color: "#fa9752",
     questionCount: 15,
   },
   {
@@ -51,7 +51,7 @@ export const MODULES: ModuleInfo[] = [
     title: "디지털 안전",
     description: "스미싱과 SNS 사칭을 구별하는 방법을 배워요!",
     icon: Smartphone,
-    color: "bg-blue-500",
+    color: "#6697e8",
     questionCount: 15,
   },
   {
@@ -59,7 +59,7 @@ export const MODULES: ModuleInfo[] = [
     title: "실전 테스트",
     description: "모든 모듈의 문제를 랜덤으로 풀어보세요!",
     icon: Shuffle,
-    color: "bg-purple-500",
+    color: "#bb8ee6",
     questionCount: 20,
   },
 ];
@@ -89,10 +89,8 @@ export default function ModuleCard({
         <div className="flex flex-col items-center text-center gap-4 h-full">
           <div className="relative">
             <div
-              className={cn(
-                "w-16 h-16 rounded-2xl flex items-center justify-center text-white",
-                module.color,
-              )}
+              className="w-16 h-16 rounded-2xl flex items-center justify-center text-white"
+              style={{ backgroundColor: module.color }}
             >
               <Icon className="w-8 h-8" />
             </div>
