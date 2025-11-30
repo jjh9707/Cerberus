@@ -20,14 +20,7 @@ function QuizMoneyDisplay({ money, moneyChange }: MoneyDisplayProps) {
 
   return (
     <div className="relative flex items-center gap-2" data-testid="quiz-money-display">
-      <div className={cn(
-        "flex items-center gap-2 px-4 py-2 rounded-xl border-2 transition-all duration-300",
-        money > 50000 
-          ? "bg-success/10 border-success/30 text-success" 
-          : money > 20000 
-          ? "bg-warning/10 border-warning/30 text-warning"
-          : "bg-destructive/10 border-destructive/30 text-destructive"
-      )}>
+      <div className="flex items-center gap-2 px-4 py-2 rounded-xl border-2 transition-all duration-300 bg-success/10 border-success/30 text-success">
         <Wallet className="w-5 h-5" />
         <span className="font-bold text-lg tabular-nums" data-testid="text-quiz-money">
           {formatMoney(money)}원

@@ -132,7 +132,7 @@ export const QUESTIONS: Question[] = [
   {
     id: "safety-5",
     type: "ox",
-    message: "학원에서 만난 친구예요! 주말에 우리 집에서 같이 숙제하자!",
+    message: "나 오늘 학원에서 만난 친구야! 주말에 우리 집에서 같이 게임하자!",
     sender: "학원 친구 민지",
     isDangerous: false,
     riskLevel: "low",
