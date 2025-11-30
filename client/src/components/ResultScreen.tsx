@@ -1,12 +1,23 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Trophy, ThumbsUp, Frown, AlertCircle, RotateCcw, Home } from 'lucide-react';
+import { Trophy, ThumbsUp, Frown, AlertCircle, RotateCcw, Home, BookOpen, CheckCircle2, XCircle } from 'lucide-react';
 import { Link } from 'wouter';
 import { cn } from '@/lib/utils';
 
+interface AnswerHistoryItem {
+  questionId: string;
+  isCorrect: boolean;
+  deduction: number;
+}
+
 interface ResultScreenProps {
   finalMoney: number;
+  correctAnswers: number;
+  incorrectAnswers: number;
+  totalQuestions: number;
+  answerHistory: AnswerHistoryItem[];
   onRestart: () => void;
+  onBackToModules: () => void;
 }
 
 type ResultTier = 'excellent' | 'good' | 'fair' | 'danger';
@@ -57,10 +68,18 @@ function getTier(money: number): ResultTier {
   return 'danger';
 }
 
-export default function ResultScreen({ finalMoney, onRestart }: ResultScreenProps) {
+export default function ResultScreen({ 
+  finalMoney, 
+  correctAnswers,
+  incorrectAnswers,
+  totalQuestions,
+  onRestart, 
+  onBackToModules 
+}: ResultScreenProps) {
   const tier = getTier(finalMoney);
   const { icon: Icon, title, message, color, bgColor } = TIER_INFO[tier];
   const savedPercentage = Math.round((finalMoney / 100000) * 100);
+  const accuracyPercentage = Math.round((correctAnswers / totalQuestions) * 100);
 
   return (
     <div className="w-full max-w-lg mx-auto space-y-6 animate-fade-in-up">
@@ -103,24 +122,67 @@ export default function ResultScreen({ finalMoney, onRestart }: ResultScreenProp
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-2 gap-4">
+      <Card>
+        <CardContent className="p-6 space-y-4">
+          <h3 className="text-lg font-semibold text-center">결과 요약</h3>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex items-center gap-3 p-3 rounded-lg bg-success/10">
+              <CheckCircle2 className="w-6 h-6 text-success" />
+              <div>
+                <p className="text-sm text-muted-foreground">맞춘 문제</p>
+                <p className="text-xl font-bold text-success">{correctAnswers}문제</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-3 p-3 rounded-lg bg-destructive/10">
+              <XCircle className="w-6 h-6 text-destructive" />
+              <div>
+                <p className="text-sm text-muted-foreground">틀린 문제</p>
+                <p className="text-xl font-bold text-destructive">{incorrectAnswers}문제</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center pt-2">
+            <p className="text-muted-foreground">
+              정답률: <span className={cn('font-bold', accuracyPercentage >= 70 ? 'text-success' : 'text-destructive')}>{accuracyPercentage}%</span>
+              <span className="text-sm ml-2">({correctAnswers}/{totalQuestions})</span>
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="space-y-3">
         <Button 
           size="lg" 
-          variant="outline"
-          className="gap-2"
-          onClick={onRestart}
-          data-testid="button-restart"
+          className="w-full gap-2"
+          onClick={onBackToModules}
+          data-testid="button-back-to-modules"
         >
-          <RotateCcw className="w-5 h-5" />
-          다시 시작
+          <BookOpen className="w-5 h-5" />
+          다른 모듈 선택하기
         </Button>
         
-        <Link href="/">
-          <Button size="lg" className="w-full gap-2" data-testid="button-home">
-            <Home className="w-5 h-5" />
-            홈으로
+        <div className="grid grid-cols-2 gap-3">
+          <Button 
+            size="lg" 
+            variant="outline"
+            className="gap-2"
+            onClick={onRestart}
+            data-testid="button-restart"
+          >
+            <RotateCcw className="w-5 h-5" />
+            다시 시작
           </Button>
-        </Link>
+          
+          <Link href="/">
+            <Button size="lg" variant="outline" className="w-full gap-2" data-testid="button-home">
+              <Home className="w-5 h-5" />
+              홈으로
+            </Button>
+          </Link>
+        </div>
       </div>
     </div>
   );

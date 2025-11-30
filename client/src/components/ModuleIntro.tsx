@@ -1,7 +1,14 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, ArrowLeft, type LucideIcon, Coins, Clock, AlertTriangle } from 'lucide-react';
+import { ArrowRight, ArrowLeft, type LucideIcon, Coins, Clock, AlertTriangle, Play, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+
+interface CurrentProgress {
+  currentQuestion: number;
+  totalQuestions: number;
+  money: number;
+  correctAnswers: number;
+}
 
 interface ModuleIntroProps {
   title: string;
@@ -11,6 +18,8 @@ interface ModuleIntroProps {
   tips: string[];
   questionCount: number;
   onStart: () => void;
+  onContinue?: () => void;
+  currentProgress?: CurrentProgress;
   onBack: () => void;
 }
 
@@ -22,8 +31,12 @@ export default function ModuleIntro({
   tips,
   questionCount,
   onStart,
+  onContinue,
+  currentProgress,
   onBack,
 }: ModuleIntroProps) {
+  const hasProgress = currentProgress && onContinue;
+
   return (
     <div className="w-full max-w-2xl mx-auto space-y-6 animate-fade-in-up">
       <Button 
@@ -51,6 +64,42 @@ export default function ModuleIntro({
               <p className="text-muted-foreground">{description}</p>
             </div>
           </div>
+
+          {hasProgress && (
+            <Card className="bg-primary/5 border-primary/20">
+              <CardContent className="p-4 space-y-3">
+                <div className="flex items-center gap-2">
+                  <Play className="w-5 h-5 text-primary" />
+                  <span className="font-semibold">진행 중인 학습이 있어요!</span>
+                </div>
+                
+                <div className="grid grid-cols-3 gap-3 text-center">
+                  <div className="p-2 rounded-lg bg-background">
+                    <p className="text-xs text-muted-foreground">현재 문제</p>
+                    <p className="font-bold">{currentProgress.currentQuestion}/{currentProgress.totalQuestions}</p>
+                  </div>
+                  <div className="p-2 rounded-lg bg-background">
+                    <p className="text-xs text-muted-foreground">맞춘 문제</p>
+                    <p className="font-bold text-success">{currentProgress.correctAnswers}문제</p>
+                  </div>
+                  <div className="p-2 rounded-lg bg-background">
+                    <p className="text-xs text-muted-foreground">남은 금액</p>
+                    <p className="font-bold text-warning">{currentProgress.money.toLocaleString()}원</p>
+                  </div>
+                </div>
+
+                <Button 
+                  size="lg" 
+                  className="w-full gap-2" 
+                  onClick={onContinue}
+                  data-testid="button-continue-quiz"
+                >
+                  <Play className="w-5 h-5" />
+                  이어서 학습하기
+                </Button>
+              </CardContent>
+            </Card>
+          )}
 
           <div className="grid grid-cols-3 gap-4 py-4">
             <div className="text-center p-3 rounded-lg bg-muted">
@@ -87,11 +136,21 @@ export default function ModuleIntro({
           <Button 
             size="lg" 
             className="w-full gap-2" 
+            variant={hasProgress ? "outline" : "default"}
             onClick={onStart}
             data-testid="button-start-quiz"
           >
-            학습 시작하기
-            <ArrowRight className="w-5 h-5" />
+            {hasProgress ? (
+              <>
+                <CheckCircle2 className="w-5 h-5" />
+                처음부터 다시 시작
+              </>
+            ) : (
+              <>
+                학습 시작하기
+                <ArrowRight className="w-5 h-5" />
+              </>
+            )}
           </Button>
         </CardContent>
       </Card>

@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 
 interface QuizQuestionProps {
   question: Question;
+  currentMoney?: number;
   onAnswer: (isCorrect: boolean, deduction: number) => void;
   onNext: () => void;
   questionNumber: number;
@@ -18,6 +19,7 @@ interface QuizQuestionProps {
 
 export default function QuizQuestion({
   question,
+  currentMoney,
   onAnswer,
   onNext,
   questionNumber,

@@ -30,12 +30,28 @@ Preferred communication style: Simple, everyday language.
 - Responsive grid: Mobile-first with breakpoints at md (tablet, 2-column) and lg (desktop, 3-column)
 
 **Game Mechanics**:
-- Virtual money system starting at 100,000 won
+- Module-independent virtual money system: Each module starts with its own 100,000 won
 - Risk-based deduction system: low (5,000), medium (15,000), high (30,000), very high (50,000)
-- Three learning modules: Smishing, SNS Impersonation, Game Item Scams
+- Four learning modules: Safety (grooming prevention), Scam (game item/gambling), Digital (smishing/phishing), Practice (random mix)
 - 30-second timer per question
-- Bankruptcy screen when money reaches zero
+- Bankruptcy screen when module money reaches zero
 - Progress tracking per module with completion status
+- Progress persistence: Users can exit and resume modules with saved progress
+
+**Module State Storage** (localStorage):
+- Each module stores independently: `filteron_module_{moduleId}`
+- Stored data per module:
+  - Current money balance
+  - Current question index
+  - Correct/incorrect answer counts
+  - Answer history with deductions
+  - Completion status
+  - Last played timestamp
+
+**Navigation Flow**:
+- Quiz exit/completion redirects to module selection page (/learn), not home
+- "Continue learning" option when progress exists
+- "Restart from beginning" always available
 
 ### Backend Architecture
 

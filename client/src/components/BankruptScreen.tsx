@@ -1,13 +1,14 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Skull, RotateCcw, Home } from 'lucide-react';
+import { Skull, RotateCcw, Home, BookOpen } from 'lucide-react';
 import { Link } from 'wouter';
 
 interface BankruptScreenProps {
   onRestart: () => void;
+  onBackToModules: () => void;
 }
 
-export default function BankruptScreen({ onRestart }: BankruptScreenProps) {
+export default function BankruptScreen({ onRestart, onBackToModules }: BankruptScreenProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/95 backdrop-blur-sm animate-fade-in-up">
       <Card className="w-full max-w-md mx-4 bg-destructive/10 border-destructive">
@@ -36,28 +37,41 @@ export default function BankruptScreen({ onRestart }: BankruptScreenProps) {
             0원
           </div>
 
-          <div className="grid grid-cols-2 gap-4 pt-4">
-            <Link href="/">
-              <Button 
-                size="lg" 
-                variant="outline"
-                className="w-full gap-2"
-                data-testid="button-home-bankrupt"
-              >
-                <Home className="w-5 h-5" />
-                홈으로
-              </Button>
-            </Link>
-            
+          <div className="space-y-3 pt-4">
             <Button 
               size="lg" 
-              className="gap-2"
+              className="w-full gap-2"
               onClick={onRestart}
               data-testid="button-restart-bankrupt"
             >
               <RotateCcw className="w-5 h-5" />
               다시 시작
             </Button>
+            
+            <div className="grid grid-cols-2 gap-3">
+              <Button 
+                size="lg" 
+                variant="outline"
+                className="gap-2"
+                onClick={onBackToModules}
+                data-testid="button-modules-bankrupt"
+              >
+                <BookOpen className="w-5 h-5" />
+                모듈 선택
+              </Button>
+              
+              <Link href="/">
+                <Button 
+                  size="lg" 
+                  variant="outline"
+                  className="w-full gap-2"
+                  data-testid="button-home-bankrupt"
+                >
+                  <Home className="w-5 h-5" />
+                  홈으로
+                </Button>
+              </Link>
+            </div>
           </div>
         </CardContent>
       </Card>

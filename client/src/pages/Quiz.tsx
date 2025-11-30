@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useLocation, useRoute } from 'wouter';
 import { ShieldAlert, Smartphone, Gamepad2, Shuffle } from 'lucide-react';
 import ModuleIntro from '@/components/ModuleIntro';
@@ -6,7 +6,7 @@ import QuizQuestion from '@/components/QuizQuestion';
 import ResultScreen from '@/components/ResultScreen';
 import BankruptScreen from '@/components/BankruptScreen';
 import { useGame } from '@/lib/GameContext';
-import { getQuestionsByCategory, type Question } from '@/lib/gameState';
+import { getQuestionsByCategory, type Question, type ModuleState } from '@/lib/gameState';
 
 const MODULE_INFO = {
   safety: {
@@ -66,57 +66,99 @@ export default function Quiz() {
   const [, setLocation] = useLocation();
   const moduleId = params?.moduleId as keyof typeof MODULE_INFO;
   
-  const { money, isBankrupt, deductMoney, markQuestionAnswered, updateModuleProgress, resetGame } = useGame();
+  const { 
+    currentModuleState,
+    initModule,
+    resetModuleProgress,
+    recordAnswer,
+    updateCurrentQuestion,
+    completeModule,
+    isModuleBankrupt,
+  } = useGame();
   
   const [quizState, setQuizState] = useState<QuizState>('intro');
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [startMoney, setStartMoney] = useState(money);
-  const correctAnswersRef = useRef(0);
+  const [moduleState, setModuleState] = useState<ModuleState | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const moduleInfo = MODULE_INFO[moduleId];
   const questions = useMemo(() => getQuestionsByCategory(moduleId), [moduleId]);
-  const currentQuestion = questions[currentQuestionIndex];
+
+  useEffect(() => {
+    if (moduleId && !isInitialized) {
+      const state = initModule(moduleId);
+      setModuleState(state);
+      setIsInitialized(true);
+      
+      if (state.completed) {
+        setQuizState('intro');
+      } else if (state.currentQuestionIndex > 0 && state.currentQuestionIndex < questions.length) {
+        setQuizState('quiz');
+      }
+    }
+  }, [moduleId, initModule, isInitialized, questions.length]);
+
+  useEffect(() => {
+    if (currentModuleState) {
+      setModuleState(currentModuleState);
+    }
+  }, [currentModuleState]);
 
   if (!moduleInfo) {
     setLocation('/learn');
     return null;
   }
 
+  const currentQuestionIndex = moduleState?.currentQuestionIndex ?? 0;
+  const currentQuestion = questions[currentQuestionIndex];
+  const currentMoney = moduleState?.money ?? 100000;
+
   const handleStart = () => {
-    setStartMoney(money);
-    setCurrentQuestionIndex(0);
-    correctAnswersRef.current = 0;
+    const freshState = resetModuleProgress(moduleId);
+    setModuleState(freshState);
+    setQuizState('quiz');
+  };
+
+  const handleContinue = () => {
     setQuizState('quiz');
   };
 
   const handleAnswer = (isCorrect: boolean, deduction: number) => {
-    if (isCorrect) {
-      correctAnswersRef.current += 1;
-    }
-    if (!isCorrect && deduction > 0) {
-      deductMoney(deduction);
-    }
-    markQuestionAnswered(currentQuestion.id);
+    recordAnswer(currentQuestion.id, isCorrect, deduction);
   };
 
   const handleNext = () => {
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
+    const nextIndex = currentQuestionIndex + 1;
+    if (nextIndex < questions.length) {
+      updateCurrentQuestion(nextIndex);
     } else {
-      updateModuleProgress(moduleId, correctAnswersRef.current, questions.length);
+      completeModule(moduleId);
       setQuizState('result');
     }
   };
 
   const handleRestart = () => {
-    resetGame();
+    const freshState = resetModuleProgress(moduleId);
+    setModuleState(freshState);
     setQuizState('intro');
-    setCurrentQuestionIndex(0);
   };
 
-  if (isBankrupt) {
-    return <BankruptScreen onRestart={handleRestart} />;
+  const handleBackToModules = () => {
+    setLocation('/learn');
+  };
+
+  if (isModuleBankrupt() && quizState === 'quiz') {
+    return (
+      <BankruptScreen 
+        onRestart={handleRestart} 
+        onBackToModules={handleBackToModules}
+      />
+    );
   }
+
+  const hasProgress = moduleState && 
+    !moduleState.completed && 
+    moduleState.currentQuestionIndex > 0 && 
+    moduleState.currentQuestionIndex < questions.length;
 
   return (
     <main className="flex-1 py-8 lg:py-12">
@@ -130,13 +172,21 @@ export default function Quiz() {
             tips={moduleInfo.tips}
             questionCount={questions.length}
             onStart={handleStart}
-            onBack={() => setLocation('/learn')}
+            onContinue={hasProgress ? handleContinue : undefined}
+            currentProgress={hasProgress ? {
+              currentQuestion: moduleState.currentQuestionIndex + 1,
+              totalQuestions: questions.length,
+              money: moduleState.money,
+              correctAnswers: moduleState.correctAnswers,
+            } : undefined}
+            onBack={handleBackToModules}
           />
         )}
 
         {quizState === 'quiz' && currentQuestion && (
           <QuizQuestion
             question={currentQuestion}
+            currentMoney={currentMoney}
             onAnswer={handleAnswer}
             onNext={handleNext}
             questionNumber={currentQuestionIndex + 1}
@@ -144,10 +194,15 @@ export default function Quiz() {
           />
         )}
 
-        {quizState === 'result' && (
+        {quizState === 'result' && moduleState && (
           <ResultScreen
-            finalMoney={money}
+            finalMoney={moduleState.money}
+            correctAnswers={moduleState.correctAnswers}
+            incorrectAnswers={moduleState.incorrectAnswers}
+            totalQuestions={questions.length}
+            answerHistory={moduleState.answerHistory}
             onRestart={handleRestart}
+            onBackToModules={handleBackToModules}
           />
         )}
       </div>

@@ -2,9 +2,11 @@ import { useState, useEffect, useCallback } from "react";
 
 const INITIAL_MONEY = 100000;
 const STORAGE_KEY = "filteron_game_state";
+const MODULE_STORAGE_PREFIX = "filteron_module_";
 
 export type RiskLevel = "low" | "medium" | "high" | "very_high";
 export type QuestionType = "ox" | "choice";
+export type ModuleId = "safety" | "digital" | "scam" | "practice";
 
 export interface OXQuestion {
   id: string;
@@ -14,7 +16,7 @@ export interface OXQuestion {
   isDangerous: boolean;
   riskLevel: RiskLevel;
   explanation: string;
-  category: "safety" | "digital" | "scam" | "practice";
+  category: ModuleId;
 }
 
 export interface ChoiceQuestion {
@@ -25,7 +27,7 @@ export interface ChoiceQuestion {
   correctAnswer: number;
   riskLevel: RiskLevel;
   explanation: string;
-  category: "safety" | "digital" | "scam" | "practice";
+  category: ModuleId;
 }
 
 export type Question = OXQuestion | ChoiceQuestion;
@@ -34,6 +36,17 @@ export interface ModuleProgress {
   completed: boolean;
   correctAnswers: number;
   totalQuestions: number;
+  lastPlayedAt: string | null;
+}
+
+export interface ModuleState {
+  money: number;
+  currentQuestionIndex: number;
+  correctAnswers: number;
+  incorrectAnswers: number;
+  answeredQuestions: string[];
+  answerHistory: { questionId: string; isCorrect: boolean; deduction: number }[];
+  completed: boolean;
   lastPlayedAt: string | null;
 }
 
@@ -353,7 +366,7 @@ export const QUESTIONS: Question[] = [
     id: "scam-6",
     type: "choice",
     question:
-      '"🎁하루에 100만원 버는 법! 지금 가입하면 보너스 10만원!"이라는 광고를 봤어요. 어떻게 해야 할까요?',
+      '"하루에 100만원 버는 법! 지금 가입하면 보너스 10만원!"이라는 광고를 봤어요. 어떻게 해야 할까요?',
     choices: [
       "보너스 10만원이니까 가입한다",
       "부모님께 여쭤본다",
@@ -469,7 +482,7 @@ export const QUESTIONS: Question[] = [
     correctAnswer: 2,
     riskLevel: "medium",
     explanation:
-      "친구와 보드게임 하는 것은 건전한 놀이예요. 도박 중독은 돈에 집착하고 거짓말하게 되는 것��� 특징이에요.",
+      "친구와 보드게임 하는 것은 건전한 놀이예요. 도박 중독은 돈에 집착하고 거짓말하게 되는 것이 특징이에요.",
     category: "scam",
   },
   {
@@ -605,12 +618,12 @@ export const QUESTIONS: Question[] = [
     id: "digital-7",
     type: "ox",
     message:
-      "[국민건강보험] 건강검진 결과 이상 소견이 발견되었습니다. 확인: hxxp://health.kr/xxx",
+      "[학교 급식실] 이번 주 급식표가 변경되었습니다. 확인하려면 눌러 주세요. 확인: hxxp://health.kr/xxx",
     sender: "1577-1000",
     isDangerous: true,
     riskLevel: "high",
     explanation:
-      "공공기관을 사칭한 스미싱이에요! 건강보험공단은 이런 방식으로 링크를 보내지 않아요.",
+      "학교에서 온 것처럼 보이지만 스미싱이에요. 학교는 이런 식으로 링크를 보내지 않아요.",
     category: "digital",
   },
   {
@@ -643,176 +656,293 @@ export const QUESTIONS: Question[] = [
     correctAnswer: 1,
     riskLevel: "very_high",
     explanation:
-      "개인정보 탈취 사기예요! 주민번호나 계좌번호를 문자로 요구하는 곳은 100% 사기입니다.",
+      "개인정보를 요구하는 당첨 메시지는 사기예요! 주민번호나 계좌번호를 절대 알려주면 안 돼요.",
     category: "digital",
   },
   {
     id: "digital-10",
     type: "ox",
     message:
-      "안녕! 나 연예인 XXX 팬클럽 회장이야. 회비 1만원만 보내면 사인 포토카드 보내줄게!",
-    sender: "@fanclub_official",
+      "[국민건강보험] 건강검진 결과 이상 발견. 즉시 확인 → bit.ly/health-check",
+    sender: "1577-1000",
     isDangerous: true,
-    riskLevel: "medium",
+    riskLevel: "high",
     explanation:
-      "SNS에서 돈을 요구하는 사람은 조심해야 해요! 공식 팬클럽은 개인 DM으로 돈을 요구하지 않아요.",
+      "공공기관을 사칭한 스미싱이에요! 국민건강보험공단은 문자로 링크를 보내지 않아요. 공식 앱이나 홈페이지에서 확인하세요.",
     category: "digital",
   },
   {
     id: "digital-11",
     type: "choice",
-    question: "안전한 비밀번호 만들기로 올바른 것은?",
+    question: "안전한 비밀번호 만들기 방법으로 옳지 않은 것은?",
     choices: [
-      "생년월일 사용",
-      "같은 비밀번호를 모든 곳에서 사용",
-      "영문, 숫자, 특수문자 조합으로 12자 이상",
-      "12345678 사용",
+      "영문, 숫자, 특수문자를 섞어서 만든다",
+      "생년월일이나 이름으로 만든다",
+      "8자 이상으로 만든다",
+      "사이트마다 다른 비밀번호를 사용한다",
     ],
-    correctAnswer: 2,
+    correctAnswer: 1,
     riskLevel: "medium",
     explanation:
-      "안전한 비밀번호는 영문, 숫자, 특수문자를 섞어서 12자 이상으로 만들어야 해요!",
+      "생년월일이나 이름은 쉽게 추측할 수 있어서 위험해요! 복잡한 조합의 비밀번호를 사용하세요.",
     category: "digital",
   },
   {
     id: "digital-12",
     type: "ox",
     message:
-      "우리 반 단톡방에서 나갔네? 다시 들어와~ 내일 체육대회 준비해야 해!",
-    sender: "반장 김서연",
-    isDangerous: false,
-    riskLevel: "low",
+      "엄마인데 폰이 고장나서 빌려서 연락해. 급하게 5만원만 보내줘. 문상으로 보내줘.",
+    sender: "010-XXXX-XXXX",
+    isDangerous: true,
+    riskLevel: "very_high",
     explanation:
-      "실제 반 친구의 정상적인 메시지예요! 링크도 없고 돈 요구도 없어서 안전해요.",
+      "가족을 사칭한 문자 사기예요! 문화상품권으로 돈을 요구하는 건 100% 사기입니다. 직접 전화로 확인하세요!",
     category: "digital",
   },
   {
     id: "digital-13",
     type: "choice",
-    question: "피싱 사이트를 구별하는 방법으로 옳지 않은 것은?",
+    question:
+      '"계정이 해킹당했습니다. 여기를 클릭해서 비밀번호를 재설정하세요"라는 이메일이 왔어요. 어떻게 해야 할까요?',
     choices: [
-      "주소창에 자물쇠 아이콘 확인",
-      "사이트 주소가 이상한지 확인",
-      "디자인이 예쁘면 안전하다",
-      "공식 앱을 통해 접속",
+      "급하니까 바로 클릭한다",
+      "링크 클릭 없이 공식 사이트에서 직접 확인한다",
+      "비밀번호를 입력해 확인한다",
+      "친구에게 물어본다",
     ],
-    correctAnswer: 2,
-    riskLevel: "medium",
+    correctAnswer: 1,
+    riskLevel: "high",
     explanation:
-      "피싱 사이트도 디자인이 예쁠 수 있어요! 주소와 자물쇠 아이콘을 확인하는 것이 중요해요.",
+      "피싱 이메일일 수 있어요! 이메일 링크를 클릭하지 말고 직접 공식 사이트에 접속해서 확인하세요.",
     category: "digital",
   },
   {
     id: "digital-14",
-    type: "ox",
-    message:
-      "긴급! 계정이 해킹되었습니다. 지금 바로 이 링크에서 비밀번호를 변경하세요: account-security.xyz",
-    sender: "보안알림",
-    isDangerous: true,
-    riskLevel: "very_high",
+    type: "choice",
+    question:
+      "공공 와이파이(카페, 지하철)를 사용할 때 주의할 점이 아닌 것은?",
+    choices: [
+      "금융 앱 사용을 피한다",
+      "중요한 비밀번호 입력을 피한다",
+      "아무 와이파이나 연결한다",
+      "자동 연결을 꺼둔다",
+    ],
+    correctAnswer: 2,
+    riskLevel: "medium",
     explanation:
-      "이건 피싱 사기예요! 진짜 보안 알림은 절대 외부 링크로 연결하지 않아요. 공식 앱에서 직접 확인하세요.",
+      "공공 와이파이는 해커가 정보를 훔쳐볼 수 있어요! 중요한 개인정보는 공공 와이파이에서 입력하지 마세요.",
     category: "digital",
   },
   {
     id: "digital-15",
     type: "choice",
-    question: "모르는 사람에게서 친구 추가 요청이 왔을 때 어떻게 해야 할까요?",
+    question:
+      '유튜브 댓글에 "무료 기프트카드 받기 → [링크]"라고 써있어요. 어떻게 해야 할까요?',
     choices: [
-      "팔로워가 늘어나니까 수락한다",
-      "거절하거나 무시한다",
-      "먼저 DM을 보낸다",
-      "프로필만 보고 수락한다",
+      "무료니까 클릭한다",
+      "친구에게도 알려준다",
+      "무시하고 신고한다",
+      "나중에 클릭한다",
     ],
-    correctAnswer: 1,
-    riskLevel: "medium",
+    correctAnswer: 2,
+    riskLevel: "high",
     explanation:
-      "모르는 사람의 친구 요청은 거절하거나 무시하는 것이 안전해요. 프로필도 가짜일 수 있어요!",
+      "댓글의 무료 기프트카드 링크는 사기예요! 개인정보를 빼가거나 악성코드가 설치될 수 있어요.",
     category: "digital",
   },
 ];
 
-export const getQuestionsByCategory = (category: string): Question[] => {
+export function getQuestionsByCategory(category: string): Question[] {
   if (category === "practice") {
     const allQuestions = [...QUESTIONS];
     for (let i = allQuestions.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [allQuestions[i], allQuestions[j]] = [allQuestions[j], allQuestions[i]];
     }
-    return allQuestions.slice(0, 20);
+    return allQuestions.slice(0, 15);
   }
   return QUESTIONS.filter((q) => q.category === category);
-};
+}
 
-const getDefaultState = (): GameState => ({
-  money: INITIAL_MONEY,
-  answeredQuestions: [],
-  currentModule: null,
-  tutorialCompleted: false,
-  moduleProgress: {},
-});
+function getDefaultModuleState(): ModuleState {
+  return {
+    money: INITIAL_MONEY,
+    currentQuestionIndex: 0,
+    correctAnswers: 0,
+    incorrectAnswers: 0,
+    answeredQuestions: [],
+    answerHistory: [],
+    completed: false,
+    lastPlayedAt: null,
+  };
+}
 
-const getInitialState = (): GameState => {
-  if (typeof window === "undefined") {
-    return getDefaultState();
-  }
-
-  const saved = localStorage.getItem(STORAGE_KEY);
-  if (saved) {
-    try {
-      const parsed = JSON.parse(saved);
-      return {
-        ...getDefaultState(),
-        ...parsed,
-      };
-    } catch {
-      return getDefaultState();
+function loadModuleState(moduleId: string): ModuleState {
+  try {
+    const stored = localStorage.getItem(`${MODULE_STORAGE_PREFIX}${moduleId}`);
+    if (stored) {
+      return JSON.parse(stored);
     }
+  } catch (e) {
+    console.error("Failed to load module state:", e);
   }
-  return getDefaultState();
-};
+  return getDefaultModuleState();
+}
+
+function saveModuleState(moduleId: string, state: ModuleState): void {
+  try {
+    localStorage.setItem(`${MODULE_STORAGE_PREFIX}${moduleId}`, JSON.stringify(state));
+  } catch (e) {
+    console.error("Failed to save module state:", e);
+  }
+}
+
+function getDefaultGameState(): GameState {
+  return {
+    money: INITIAL_MONEY,
+    answeredQuestions: [],
+    currentModule: null,
+    tutorialCompleted: false,
+    moduleProgress: {},
+  };
+}
+
+function loadGameState(): GameState {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      return { ...getDefaultGameState(), ...JSON.parse(stored) };
+    }
+  } catch (e) {
+    console.error("Failed to load game state:", e);
+  }
+  return getDefaultGameState();
+}
+
+function saveGameState(state: GameState): void {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (e) {
+    console.error("Failed to save game state:", e);
+  }
+}
 
 export function useGameState() {
-  const [state, setState] = useState<GameState>(getInitialState);
-  const [moneyChange, setMoneyChange] = useState<number | null>(null);
+  const [state, setState] = useState<GameState>(loadGameState);
+  const [currentModuleState, setCurrentModuleState] = useState<ModuleState | null>(null);
+  const [activeModuleId, setActiveModuleId] = useState<string | null>(null);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    saveGameState(state);
   }, [state]);
 
+  useEffect(() => {
+    if (activeModuleId && currentModuleState) {
+      saveModuleState(activeModuleId, currentModuleState);
+    }
+  }, [currentModuleState, activeModuleId]);
+
+  const initModule = useCallback((moduleId: string) => {
+    const moduleState = loadModuleState(moduleId);
+    setActiveModuleId(moduleId);
+    setCurrentModuleState(moduleState);
+    setState(prev => ({ ...prev, currentModule: moduleId }));
+    return moduleState;
+  }, []);
+
+  const resetModuleProgress = useCallback((moduleId: string) => {
+    const freshState = getDefaultModuleState();
+    freshState.lastPlayedAt = new Date().toISOString();
+    setCurrentModuleState(freshState);
+    saveModuleState(moduleId, freshState);
+    return freshState;
+  }, []);
+
+  const getModuleState = useCallback((moduleId: string): ModuleState => {
+    return loadModuleState(moduleId);
+  }, []);
+
+  const deductModuleMoney = useCallback((amount: number) => {
+    setCurrentModuleState(prev => {
+      if (!prev) return prev;
+      const newMoney = Math.max(0, prev.money - amount);
+      return { ...prev, money: newMoney };
+    });
+  }, []);
+
+  const recordAnswer = useCallback((questionId: string, isCorrect: boolean, deduction: number) => {
+    setCurrentModuleState(prev => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        correctAnswers: isCorrect ? prev.correctAnswers + 1 : prev.correctAnswers,
+        incorrectAnswers: !isCorrect ? prev.incorrectAnswers + 1 : prev.incorrectAnswers,
+        answeredQuestions: [...prev.answeredQuestions, questionId],
+        answerHistory: [...prev.answerHistory, { questionId, isCorrect, deduction }],
+        money: isCorrect ? prev.money : Math.max(0, prev.money - deduction),
+      };
+    });
+  }, []);
+
+  const updateCurrentQuestion = useCallback((index: number) => {
+    setCurrentModuleState(prev => {
+      if (!prev) return prev;
+      return { ...prev, currentQuestionIndex: index };
+    });
+  }, []);
+
+  const completeModule = useCallback((moduleId: string) => {
+    setCurrentModuleState(prev => {
+      if (!prev) return prev;
+      const completedState = {
+        ...prev,
+        completed: true,
+        lastPlayedAt: new Date().toISOString(),
+      };
+      saveModuleState(moduleId, completedState);
+      
+      setState(s => ({
+        ...s,
+        moduleProgress: {
+          ...s.moduleProgress,
+          [moduleId]: {
+            completed: true,
+            correctAnswers: prev.correctAnswers,
+            totalQuestions: prev.answeredQuestions.length,
+            lastPlayedAt: new Date().toISOString(),
+          },
+        },
+      }));
+      
+      return completedState;
+    });
+  }, []);
+
+  const isModuleBankrupt = useCallback(() => {
+    return currentModuleState?.money === 0;
+  }, [currentModuleState]);
+
+  const completeTutorial = useCallback(() => {
+    setState(prev => ({ ...prev, tutorialCompleted: true }));
+  }, []);
+
   const deductMoney = useCallback((amount: number) => {
-    setMoneyChange(-amount);
-    setState((prev) => ({
+    setState(prev => ({
       ...prev,
       money: Math.max(0, prev.money - amount),
     }));
-    setTimeout(() => setMoneyChange(null), 2000);
   }, []);
 
   const markQuestionAnswered = useCallback((questionId: string) => {
-    setState((prev) => ({
+    setState(prev => ({
       ...prev,
       answeredQuestions: [...prev.answeredQuestions, questionId],
     }));
   }, []);
 
-  const setCurrentModule = useCallback((module: string | null) => {
-    setState((prev) => ({
-      ...prev,
-      currentModule: module,
-    }));
-  }, []);
-
-  const completeTutorial = useCallback(() => {
-    setState((prev) => ({
-      ...prev,
-      tutorialCompleted: true,
-    }));
-  }, []);
-
   const updateModuleProgress = useCallback(
     (moduleId: string, correctAnswers: number, totalQuestions: number) => {
-      setState((prev) => ({
+      setState(prev => ({
         ...prev,
         moduleProgress: {
           ...prev.moduleProgress,
@@ -825,40 +955,54 @@ export function useGameState() {
         },
       }));
     },
-    [],
-  );
-
-  const getModuleProgress = useCallback(
-    (moduleId: string): ModuleProgress | null => {
-      return state.moduleProgress[moduleId] || null;
-    },
-    [state.moduleProgress],
+    []
   );
 
   const resetGame = useCallback(() => {
-    setState({
-      money: INITIAL_MONEY,
-      answeredQuestions: [],
-      currentModule: null,
-      tutorialCompleted: true,
-      moduleProgress: {},
-    });
-    setMoneyChange(null);
+    setState(getDefaultGameState());
   }, []);
 
-  const isBankrupt = state.money <= 0;
+  const getModuleProgress = useCallback((moduleId: string): ModuleProgress | null => {
+    return state.moduleProgress[moduleId] || null;
+  }, [state.moduleProgress]);
+
+  const getCurrentModuleId = useCallback((): string | null => {
+    const moduleIds = ['safety', 'scam', 'digital', 'practice'];
+    for (const id of moduleIds) {
+      const moduleState = loadModuleState(id);
+      if (moduleState.currentQuestionIndex > 0 && !moduleState.completed) {
+        return id;
+      }
+    }
+    return null;
+  }, []);
 
   return {
-    ...state,
-    moneyChange,
-    isBankrupt,
+    money: state.money,
+    isBankrupt: state.money <= 0,
+    answeredQuestions: state.answeredQuestions,
+    tutorialCompleted: state.tutorialCompleted,
+    moduleProgress: state.moduleProgress,
+    currentModule: getCurrentModuleId(),
+    
+    currentModuleState,
+    activeModuleId,
+    
+    initModule,
+    resetModuleProgress,
+    getModuleState,
+    getModuleProgress,
+    deductModuleMoney,
+    recordAnswer,
+    updateCurrentQuestion,
+    completeModule,
+    isModuleBankrupt,
+    
     deductMoney,
     markQuestionAnswered,
-    setCurrentModule,
-    completeTutorial,
     updateModuleProgress,
-    getModuleProgress,
     resetGame,
+    completeTutorial,
   };
 }
 
