@@ -2,63 +2,66 @@
 @tailwind components;
 @tailwind utilities;
 
-/* LIGHT MODE - FilterOn Sophisticated Pastel Theme for Students */
+/* LIGHT MODE - FilterOn Colorful Pastel Theme for Students */
 :root {
   --button-outline: rgba(0,0,0, .08);
   --badge-outline: rgba(0,0,0, .05);
   --opaque-button-border-intensity: -6;
   --elevate-1: rgba(0,0,0, .04);
   --elevate-2: rgba(0,0,0, .08);
-  /* Main Background: Clean White/Light Gray */
-  --background: 210 17% 98%;
+  /* Main Background: Warm Ivory #fffef9 */
+  --background: 50 100% 99%;
   /* Text: Soft Dark Gray #2d3748 */
   --foreground: 220 26% 23%;
-  --border: 194 30% 88%;
-  /* Card: Pure White */
+  --border: 115 30% 88%;
+  /* Card: Pure White with subtle warmth */
   --card: 0 0% 100%;
   --card-foreground: 220 26% 23%;
-  --card-border: 194 30% 90%;
-  /* Sidebar: Cream Beige inspired #fff8dc */
-  --sidebar: 54 60% 96%;
+  --card-border: 115 30% 90%;
+  /* Sidebar: Mint Green inspired #b4ebae */
+  --sidebar: 115 56% 94%;
   --sidebar-foreground: 220 26% 23%;
-  --sidebar-border: 54 40% 88%;
+  --sidebar-border: 115 40% 85%;
   /* Sidebar Primary: Mint Green #b4ebae */
-  --sidebar-primary: 115 56% 70%;
+  --sidebar-primary: 115 56% 75%;
   --sidebar-primary-foreground: 220 26% 20%;
-  --sidebar-accent: 115 40% 88%;
+  --sidebar-accent: 115 50% 88%;
   --sidebar-accent-foreground: 220 26% 25%;
-  --sidebar-ring: 115 56% 70%;
+  --sidebar-ring: 115 56% 75%;
   --popover: 0 0% 100%;
   --popover-foreground: 220 26% 23%;
-  --popover-border: 194 30% 88%;
+  --popover-border: 115 30% 88%;
   /* Primary: Mint Green #b4ebae */
-  --primary: 115 56% 65%;
+  --primary: 115 56% 75%;
   --primary-foreground: 220 26% 18%;
-  /* Secondary: Sky Blue #a8d5e2 */
-  --secondary: 194 47% 72%;
-  --secondary-foreground: 220 26% 18%;
-  /* Muted: Lavender inspired #e8d5f2 */
-  --muted: 278 35% 92%;
-  --muted-foreground: 220 20% 40%;
-  /* Accent: Coral #ffd7ba */
-  --accent: 27 100% 86%;
-  --accent-foreground: 27 60% 25%;
+  /* Secondary: Pastel Peach #ffe9d6 */
+  --secondary: 25 100% 92%;
+  --secondary-foreground: 25 60% 25%;
+  /* Muted: Pastel Lavender #d4c5f9 */
+  --muted: 255 77% 93%;
+  --muted-foreground: 255 30% 40%;
+  /* Accent: Pastel Pink #ffd4e5 */
+  --accent: 335 100% 92%;
+  --accent-foreground: 335 50% 30%;
   --destructive: 0 70% 55%;
   --destructive-foreground: 0 0% 100%;
-  --input: 194 30% 75%;
-  --ring: 115 56% 65%;
-  /* Chart Colors - Pastel Palette */
-  --chart-1: 115 56% 70%;
-  --chart-2: 194 47% 72%;
-  --chart-3: 27 100% 80%;
-  --chart-4: 278 47% 75%;
-  --chart-5: 88 51% 70%;
-  /* Success: Lime Green #c5e1a5 */
-  --success: 88 51% 65%;
-  --success-foreground: 88 50% 18%;
-  /* Warning: Coral #ffd7ba */
-  --warning: 27 100% 80%;
-  --warning-foreground: 27 60% 25%;
+  --input: 115 30% 80%;
+  --ring: 115 56% 75%;
+  /* Chart Colors - Colorful Pastel Palette */
+  --chart-1: 115 56% 75%;
+  --chart-2: 25 100% 85%;
+  --chart-3: 335 100% 85%;
+  --chart-4: 255 77% 80%;
+  --chart-5: 213 100% 85%;
+  /* Success: Mint Green #b4ebae */
+  --success: 115 56% 70%;
+  --success-foreground: 115 50% 18%;
+  /* Warning: Pastel Yellow #fff4a3 */
+  --warning: 53 100% 82%;
+  --warning-foreground: 53 60% 25%;
+  /* Info: Pastel Sky Blue #c9e4ff */
+  --info: 213 100% 90%;
+  --info-foreground: 213 50% 25%;
   /* Fonts: Clean Korean Typography */
   --font-sans: 'Noto Sans KR', 'Pretendard', sans-serif;
   --font-heading: 'Jua', 'Black Han Sans', sans-serif;
@@ -77,6 +80,13 @@
   --shadow-2xl: 0px 12px 32px 0px rgba(0,0,0,0.16);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
+  /* Additional Pastel Colors for variety */
+  --pastel-peach: 25 100% 92%;
+  --pastel-pink: 335 100% 92%;
+  --pastel-lavender: 255 77% 87%;
+  --pastel-yellow: 53 100% 82%;
+  --pastel-sky: 213 100% 90%;
+  --pastel-mint: 115 56% 81%;
 
 /* Fallback for older browsers */
   --sidebar-primary-border: hsl(var(--sidebar-primary));

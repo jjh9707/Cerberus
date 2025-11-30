@@ -89,6 +89,18 @@ export default {
           busy: "rgb(239 68 68)",
           offline: "rgb(156 163 175)",
         },
+        pastel: {
+          peach: "hsl(var(--pastel-peach) / <alpha-value>)",
+          pink: "hsl(var(--pastel-pink) / <alpha-value>)",
+          lavender: "hsl(var(--pastel-lavender) / <alpha-value>)",
+          yellow: "hsl(var(--pastel-yellow) / <alpha-value>)",
+          sky: "hsl(var(--pastel-sky) / <alpha-value>)",
+          mint: "hsl(var(--pastel-mint) / <alpha-value>)",
+        },
+        info: {
+          DEFAULT: "hsl(var(--info) / <alpha-value>)",
+          foreground: "hsl(var(--info-foreground) / <alpha-value>)",
+        },
       },
       fontFamily: {
         sans: ["var(--font-sans)"],
