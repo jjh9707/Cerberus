@@ -5,7 +5,6 @@ import { Link } from 'wouter';
 
 interface HeroSectionProps {
   onStartTutorial?: () => void;
-  onOpenLearning?: () => void;
 }
 
 const mainActions = [
@@ -15,7 +14,7 @@ const mainActions = [
     description: '안전한 인터넷 사용법을 재미있게 배워요',
     icon: BookOpen,
     color: '#6697e8',
-    isModal: true,
+    href: '/learn',
   },
   {
     id: 'deepvoice',
@@ -35,7 +34,7 @@ const mainActions = [
   },
 ];
 
-export default function HeroSection({ onStartTutorial, onOpenLearning }: HeroSectionProps) {
+export default function HeroSection({ onStartTutorial }: HeroSectionProps) {
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-secondary/10 py-12 lg:py-20">
       <div className="absolute inset-0 overflow-hidden">
@@ -82,38 +81,26 @@ export default function HeroSection({ onStartTutorial, onOpenLearning }: HeroSec
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
             {mainActions.map((action) => {
               const Icon = action.icon;
-              const cardContent = (
-                <Card 
-                  className="overflow-visible hover-elevate active-elevate-2 cursor-pointer transition-all h-full border-2"
-                  style={{ borderColor: `${action.color}30` }}
-                  data-testid={`card-action-${action.id}`}
-                >
-                  <CardContent className="p-6 flex flex-col items-center text-center gap-3">
-                    <div 
-                      className="w-14 h-14 rounded-2xl flex items-center justify-center text-white"
-                      style={{ backgroundColor: action.color }}
-                    >
-                      <Icon className="w-7 h-7" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold mb-1">{action.title}</h3>
-                      <p className="text-sm text-muted-foreground">{action.description}</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-
-              if (action.isModal) {
-                return (
-                  <div key={action.id} onClick={onOpenLearning}>
-                    {cardContent}
-                  </div>
-                );
-              }
-
               return (
-                <Link key={action.id} href={action.href!}>
-                  {cardContent}
+                <Link key={action.id} href={action.href}>
+                  <Card 
+                    className="overflow-visible hover-elevate active-elevate-2 cursor-pointer transition-all h-full border-2"
+                    style={{ borderColor: `${action.color}30` }}
+                    data-testid={`card-action-${action.id}`}
+                  >
+                    <CardContent className="p-6 flex flex-col items-center text-center gap-3">
+                      <div 
+                        className="w-14 h-14 rounded-2xl flex items-center justify-center text-white"
+                        style={{ backgroundColor: action.color }}
+                      >
+                        <Icon className="w-7 h-7" />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-bold mb-1">{action.title}</h3>
+                        <p className="text-sm text-muted-foreground">{action.description}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </Link>
               );
             })}
