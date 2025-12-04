@@ -435,7 +435,7 @@ export default function DeepvoiceEventOverlay({ onClose }: DeepvoiceEventOverlay
               className="gap-2 bg-[#357051] hover:bg-[#4a9a6e] text-white"
               data-testid="button-convert"
             >
-              변환하기
+              다음으로
               <ArrowRight className="w-5 h-5" aria-hidden="true" />
             </Button>
           </div>
