@@ -21,11 +21,16 @@ Preferred communication style: Simple, everyday language.
 - Local storage persistence for game progress, user money, answered questions, and module completion
 - TanStack React Query for server state management (configured but minimal server interaction currently)
 
-**UI Framework**: shadcn/ui component library built on Radix UI primitives with Tailwind CSS for styling. The design system follows a child-friendly aesthetic with rounded corners, bright colors (primary blue, secondary green, accent orange), and large touch-friendly components.
+**UI Framework**: shadcn/ui component library built on Radix UI primitives with Tailwind CSS for styling. The design system follows a child-friendly aesthetic with rounded corners, teal-based colors, and large touch-friendly components.
 
 **Design System**:
-- Typography: Nunito (primary, friendly rounded sans-serif) and Poppins (secondary, clean UI elements)
-- Color scheme: Light mode optimized with custom HSL color variables for primary, secondary, accent, destructive states
+- Typography: Noto Sans KR (primary), Jua (headings) for Korean typography
+- Color scheme: Deep teal theme with warm ivory background
+  - Primary: #357051 (Deep Teal) - Main brand color for FilterOn text and primary actions
+  - Secondary: #35706E (Deep Cyan) - Complementary color for deepvoice features
+  - Accent: #377035 (Deep Green) - Used for feedback and secondary highlights
+  - Background: Warm Ivory (48 80% 97%) - Light yellow-tinted background
+  - Success: Soft Teal (150 25% 55%) - Lower saturation for progress bars
 - Spacing: Consistent 4px-based scale (4, 6, 8, 12, 16) for rhythm
 - Responsive grid: Mobile-first with breakpoints at md (tablet, 2-column) and lg (desktop, 3-column)
 
