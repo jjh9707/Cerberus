@@ -41,7 +41,6 @@ export default function HeroSection({ onStartTutorial }: HeroSectionProps) {
         <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-primary/10 blur-3xl" />
         <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-secondary/10 blur-3xl" />
       </div>
-
       <div className="container relative mx-auto px-4">
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary text-primary-foreground">
@@ -90,7 +89,7 @@ export default function HeroSection({ onStartTutorial }: HeroSectionProps) {
                   >
                     <CardContent className="p-6 flex flex-col items-center text-center gap-3">
                       <div 
-                        className="w-14 h-14 rounded-2xl flex items-center justify-center text-white"
+                        className="w-14 h-14 rounded-2xl flex items-center justify-center text-white bg-[#3cb2cf]"
                         style={{ backgroundColor: action.color }}
                       >
                         <Icon className="w-7 h-7" />
