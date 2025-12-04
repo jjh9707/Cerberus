@@ -1,5 +1,15 @@
+import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog';
 import { Mic, Volume2, ShieldCheck, AlertTriangle, Lock, ArrowLeft, ArrowRight } from 'lucide-react';
 import { Link } from 'wouter';
 
@@ -8,6 +18,21 @@ interface DeepvoiceInfoProps {
 }
 
 export default function DeepvoiceInfo({ onStartExperience }: DeepvoiceInfoProps) {
+  const [showConsentDialog, setShowConsentDialog] = useState(false);
+  const [isConsentChecked, setIsConsentChecked] = useState(false);
+
+  const handleStartClick = () => {
+    setShowConsentDialog(true);
+    setIsConsentChecked(false);
+  };
+
+  const handleConfirmConsent = () => {
+    if (isConsentChecked) {
+      setShowConsentDialog(false);
+      onStartExperience?.();
+    }
+  };
+
   return (
     <div className="w-full max-w-4xl mx-auto space-y-8">
       <div className="text-center space-y-4">
@@ -80,7 +105,7 @@ export default function DeepvoiceInfo({ onStartExperience }: DeepvoiceInfoProps)
           <Button 
             size="lg" 
             className="w-full gap-2"
-            onClick={onStartExperience}
+            onClick={handleStartClick}
             data-testid="button-deepvoice-demo"
           >
             <Mic className="w-5 h-5" />
@@ -118,6 +143,79 @@ export default function DeepvoiceInfo({ onStartExperience }: DeepvoiceInfoProps)
           </Button>
         </Link>
       </div>
+
+      <Dialog open={showConsentDialog} onOpenChange={setShowConsentDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-xl">
+              <Lock className="w-5 h-5 text-primary" />
+              체험 전 확인사항
+            </DialogTitle>
+            <DialogDescription>
+              딥보이스 체험을 시작하기 전에 아래 내용을 확인해주세요.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="p-4 rounded-lg" style={{ backgroundColor: 'hsl(150, 30%, 94%)' }}>
+              <h4 className="font-bold mb-2 flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-primary" />
+                안전 약속
+              </h4>
+              <ul className="space-y-1 text-sm text-muted-foreground">
+                <li>여러분의 목소리는 <strong className="text-foreground">절대 저장되지 않아요!</strong></li>
+                <li>녹음된 목소리는 체험이 끝나면 바로 삭제되며, 서버에 전송되거나 보관되지 않습니다.</li>
+                <li>필터온은 여러분의 개인정보를 소중히 지킵니다.</li>
+              </ul>
+            </div>
+
+            <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/20">
+              <h4 className="font-bold mb-2 flex items-center gap-2 text-destructive">
+                <AlertTriangle className="w-4 h-4" />
+                주의사항
+              </h4>
+              <ul className="space-y-1 text-sm text-muted-foreground">
+                <li>이 체험에서 제작한 딥보이스를 <strong className="text-foreground">악용하지 않겠습니다.</strong></li>
+                <li>이를 지키지 않고 악용할 경우 발생하는 모든 문제에 대해 <strong className="text-foreground">필터온은 책임을 지지 않습니다.</strong></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-3 py-2 px-1">
+            <Checkbox
+              id="consent-checkbox"
+              checked={isConsentChecked}
+              onCheckedChange={(checked) => setIsConsentChecked(checked === true)}
+              data-testid="checkbox-consent"
+            />
+            <label
+              htmlFor="consent-checkbox"
+              className="text-sm font-medium leading-none cursor-pointer select-none"
+            >
+              위 내용을 확인했습니다.
+            </label>
+          </div>
+
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={() => setShowConsentDialog(false)}
+              data-testid="button-consent-cancel"
+            >
+              취소
+            </Button>
+            <Button
+              onClick={handleConfirmConsent}
+              disabled={!isConsentChecked}
+              className="gap-2"
+              data-testid="button-consent-confirm"
+            >
+              <Mic className="w-4 h-4" />
+              체험 시작
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

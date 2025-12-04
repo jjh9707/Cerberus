@@ -398,7 +398,8 @@ export default function DeepvoiceEventOverlay({
                   읽어주세요
                 </div>
                 <p className="text-lg text-white leading-relaxed">
-                  여보세요? 엄마 어디야? 나 감기 걸린 거 같은데... <br /> 오늘 학원 안 가도 돼?
+                  여보세요? 엄마 어디야? 나 감기 걸린 거 같은데... <br /> 오늘
+                  학원 안 가도 돼?
                 </p>
               </CardContent>
             </Card>
@@ -554,8 +555,8 @@ export default function DeepvoiceEventOverlay({
             >
               <div className="text-neutral-300 leading-relaxed space-y-4">
                 <p>
-                  <strong className="text-white">어떠신가요?</strong> 이 음성은
-                  AI로 생성된 '딥보이스'(Deep Voice)입니다.
+                  <strong className="text-white">어떠신가요?</strong> <br /> 이
+                  음성은 AI로 생성된 '딥보이스'(Deep Voice)입니다.
                 </p>
                 <p>
                   짧게 말한 그 순간, 당신과 비슷한 목소리를 만들어 낼 수
