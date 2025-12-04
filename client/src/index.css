@@ -2,66 +2,66 @@
 @tailwind components;
 @tailwind utilities;
 
-/* LIGHT MODE - FilterOn Colorful Pastel Theme for Students */
+/* LIGHT MODE - FilterOn Deep Teal Theme for Students */
 :root {
   --button-outline: rgba(0,0,0, .08);
   --badge-outline: rgba(0,0,0, .05);
   --opaque-button-border-intensity: -6;
   --elevate-1: rgba(0,0,0, .04);
   --elevate-2: rgba(0,0,0, .08);
-  /* Main Background: Warm Ivory #fffef9 */
-  --background: 50 100% 99%;
-  /* Text: Soft Dark Gray #2d3748 */
-  --foreground: 220 26% 23%;
-  --border: 115 30% 88%;
+  /* Main Background: Warm Ivory (similar to before) */
+  --background: 48 80% 97%;
+  /* Text: Deep Teal-Gray for readability */
+  --foreground: 150 20% 20%;
+  --border: 150 20% 85%;
   /* Card: Pure White with subtle warmth */
   --card: 0 0% 100%;
-  --card-foreground: 220 26% 23%;
-  --card-border: 115 30% 90%;
-  /* Sidebar: Mint Green inspired #b4ebae */
-  --sidebar: 115 56% 94%;
-  --sidebar-foreground: 220 26% 23%;
-  --sidebar-border: 115 40% 85%;
-  /* Sidebar Primary: Mint Green #b4ebae */
-  --sidebar-primary: 115 56% 75%;
-  --sidebar-primary-foreground: 220 26% 20%;
-  --sidebar-accent: 115 50% 88%;
-  --sidebar-accent-foreground: 220 26% 25%;
-  --sidebar-ring: 115 56% 75%;
+  --card-foreground: 150 20% 20%;
+  --card-border: 150 20% 88%;
+  /* Sidebar: Light Teal inspired */
+  --sidebar: 150 30% 94%;
+  --sidebar-foreground: 150 20% 20%;
+  --sidebar-border: 150 25% 85%;
+  /* Sidebar Primary: Deep Teal #357051 */
+  --sidebar-primary: 150 36% 32%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 150 25% 88%;
+  --sidebar-accent-foreground: 150 20% 25%;
+  --sidebar-ring: 150 36% 32%;
   --popover: 0 0% 100%;
-  --popover-foreground: 220 26% 23%;
-  --popover-border: 115 30% 88%;
-  /* Primary: Mint Green #b4ebae */
-  --primary: 115 56% 75%;
-  --primary-foreground: 220 26% 18%;
-  /* Secondary: Pastel Peach #ffe9d6 */
-  --secondary: 25 100% 92%;
-  --secondary-foreground: 25 60% 25%;
-  /* Muted: Pastel Lavender #d4c5f9 */
-  --muted: 255 77% 93%;
-  --muted-foreground: 255 30% 40%;
-  /* Accent: Pastel Pink #ffd4e5 */
-  --accent: 335 100% 92%;
-  --accent-foreground: 335 50% 30%;
+  --popover-foreground: 150 20% 20%;
+  --popover-border: 150 20% 85%;
+  /* Primary: Deep Teal #357051 */
+  --primary: 150 36% 32%;
+  --primary-foreground: 0 0% 100%;
+  /* Secondary: Deep Cyan #35706E */
+  --secondary: 178 36% 32%;
+  --secondary-foreground: 0 0% 100%;
+  /* Muted: Soft Gray-Teal */
+  --muted: 150 15% 92%;
+  --muted-foreground: 150 15% 45%;
+  /* Accent: Deep Green #377035 */
+  --accent: 118 36% 32%;
+  --accent-foreground: 0 0% 100%;
   --destructive: 0 70% 55%;
   --destructive-foreground: 0 0% 100%;
-  --input: 115 30% 80%;
-  --ring: 115 56% 75%;
-  /* Chart Colors - Colorful Pastel Palette */
-  --chart-1: 115 56% 75%;
-  --chart-2: 25 100% 85%;
-  --chart-3: 335 100% 85%;
-  --chart-4: 255 77% 80%;
-  --chart-5: 213 100% 85%;
-  /* Success: Mint Green #b4ebae */
-  --success: 115 56% 70%;
-  --success-foreground: 115 50% 18%;
-  /* Warning: Pastel Yellow #fff4a3 */
-  --warning: 53 100% 82%;
-  --warning-foreground: 53 60% 25%;
-  /* Info: Pastel Sky Blue #c9e4ff */
-  --info: 213 100% 90%;
-  --info-foreground: 213 50% 25%;
+  --input: 150 20% 80%;
+  --ring: 150 36% 32%;
+  /* Chart Colors - Teal-based Palette */
+  --chart-1: 150 36% 32%;
+  --chart-2: 178 36% 40%;
+  --chart-3: 118 36% 40%;
+  --chart-4: 150 30% 50%;
+  --chart-5: 178 30% 50%;
+  /* Success: Soft Teal (lower saturation, higher brightness for progress bars) */
+  --success: 150 25% 55%;
+  --success-foreground: 0 0% 100%;
+  /* Warning: Warm Yellow */
+  --warning: 45 90% 65%;
+  --warning-foreground: 45 80% 20%;
+  /* Info: Teal-Cyan */
+  --info: 178 40% 45%;
+  --info-foreground: 0 0% 100%;
   /* Fonts: Clean Korean Typography */
   --font-sans: 'Noto Sans KR', 'Pretendard', sans-serif;
   --font-heading: 'Jua', 'Black Han Sans', sans-serif;
@@ -80,13 +80,13 @@
   --shadow-2xl: 0px 12px 32px 0px rgba(0,0,0,0.16);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
-  /* Additional Pastel Colors for variety */
-  --pastel-peach: 25 100% 92%;
-  --pastel-pink: 335 100% 92%;
-  --pastel-lavender: 255 77% 87%;
-  --pastel-yellow: 53 100% 82%;
-  --pastel-sky: 213 100% 90%;
-  --pastel-mint: 115 56% 81%;
+  /* Additional Theme Colors for variety */
+  --pastel-teal: 150 30% 85%;
+  --pastel-cyan: 178 30% 85%;
+  --pastel-green: 118 30% 85%;
+  --pastel-yellow: 48 80% 85%;
+  --pastel-warm: 35 60% 90%;
+  --pastel-mint: 150 35% 80%;
 
 /* Fallback for older browsers */
   --sidebar-primary-border: hsl(var(--sidebar-primary));
@@ -123,54 +123,54 @@
   --opaque-button-border-intensity: 8;
   --elevate-1: rgba(255,255,255, .05);
   --elevate-2: rgba(255,255,255, .10);
-  /* Dark mode: Deep but warm background */
-  --background: 220 20% 12%;
-  --foreground: 210 25% 92%;
-  --border: 220 15% 22%;
-  --card: 220 18% 16%;
-  --card-foreground: 210 25% 92%;
-  --card-border: 220 15% 20%;
-  /* Sidebar: Slightly warmer dark */
-  --sidebar: 220 18% 14%;
-  --sidebar-foreground: 210 25% 92%;
-  --sidebar-border: 220 15% 20%;
-  /* Sidebar Primary: Mint Green adjusted for dark */
-  --sidebar-primary: 115 50% 55%;
+  /* Dark mode: Deep teal-gray background */
+  --background: 150 15% 10%;
+  --foreground: 150 15% 92%;
+  --border: 150 12% 20%;
+  --card: 150 12% 14%;
+  --card-foreground: 150 15% 92%;
+  --card-border: 150 12% 18%;
+  /* Sidebar: Darker teal */
+  --sidebar: 150 12% 12%;
+  --sidebar-foreground: 150 15% 92%;
+  --sidebar-border: 150 12% 18%;
+  /* Sidebar Primary: Teal for dark mode */
+  --sidebar-primary: 150 40% 50%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 220 15% 22%;
-  --sidebar-accent-foreground: 210 25% 88%;
-  --sidebar-ring: 115 50% 55%;
-  --popover: 220 18% 18%;
-  --popover-foreground: 210 25% 92%;
-  --popover-border: 220 15% 22%;
-  /* Primary: Mint Green for dark mode */
-  --primary: 115 50% 55%;
+  --sidebar-accent: 150 12% 20%;
+  --sidebar-accent-foreground: 150 15% 88%;
+  --sidebar-ring: 150 40% 50%;
+  --popover: 150 12% 16%;
+  --popover-foreground: 150 15% 92%;
+  --popover-border: 150 12% 20%;
+  /* Primary: Teal for dark mode */
+  --primary: 150 40% 50%;
   --primary-foreground: 0 0% 100%;
-  /* Secondary: Sky Blue for dark mode */
-  --secondary: 194 45% 55%;
+  /* Secondary: Cyan for dark mode */
+  --secondary: 178 40% 45%;
   --secondary-foreground: 0 0% 100%;
-  /* Muted: Dark Lavender */
-  --muted: 278 15% 20%;
-  --muted-foreground: 278 15% 65%;
-  /* Accent: Coral for dark mode */
-  --accent: 27 80% 60%;
-  --accent-foreground: 27 90% 95%;
+  /* Muted: Dark gray-teal */
+  --muted: 150 10% 18%;
+  --muted-foreground: 150 10% 60%;
+  /* Accent: Green for dark mode */
+  --accent: 118 40% 45%;
+  --accent-foreground: 0 0% 100%;
   --destructive: 0 65% 50%;
   --destructive-foreground: 0 0% 100%;
-  --input: 220 15% 28%;
-  --ring: 115 50% 55%;
-  /* Chart Colors - Pastel for dark mode */
-  --chart-1: 115 50% 55%;
-  --chart-2: 194 45% 55%;
-  --chart-3: 27 80% 60%;
-  --chart-4: 278 50% 60%;
-  --chart-5: 88 45% 55%;
-  /* Success: Lime Green for dark */
-  --success: 88 45% 50%;
+  --input: 150 12% 25%;
+  --ring: 150 40% 50%;
+  /* Chart Colors - Teal-based for dark mode */
+  --chart-1: 150 40% 50%;
+  --chart-2: 178 40% 50%;
+  --chart-3: 118 40% 50%;
+  --chart-4: 150 30% 55%;
+  --chart-5: 178 30% 55%;
+  /* Success: Soft Teal for dark */
+  --success: 150 35% 50%;
   --success-foreground: 0 0% 100%;
-  /* Warning: Coral for dark */
-  --warning: 27 80% 55%;
-  --warning-foreground: 27 90% 95%;
+  /* Warning: Warm Yellow for dark */
+  --warning: 45 80% 55%;
+  --warning-foreground: 45 90% 15%;
   /* Shadows: Subtle glow effect in dark mode */
   --shadow-2xs: 0px 1px 2px 0px rgba(0,0,0,0.3);
   --shadow-xs: 0px 1px 3px 0px rgba(0,0,0,0.35);

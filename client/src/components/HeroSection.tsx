@@ -13,7 +13,7 @@ const mainActions = [
     title: '학습',
     description: '안전한 인터넷 사용법을 재미있게 배워요',
     icon: BookOpen,
-    color: '#6697e8',
+    color: '#357051',
     href: '/learn',
   },
   {
@@ -21,7 +21,7 @@ const mainActions = [
     title: '딥보이스',
     description: 'AI 음성 복제의 위험성을 직접 체험해요',
     icon: Mic,
-    color: '#bb8ee6',
+    color: '#35706E',
     href: '/deepvoice',
   },
   {
@@ -29,7 +29,7 @@ const mainActions = [
     title: '의견보내기',
     description: '필터온에 의견이나 제안을 보내주세요',
     icon: MessageSquare,
-    color: '#fa9752',
+    color: '#377035',
     href: '/feedback',
   },
 ];
@@ -44,14 +44,14 @@ export default function HeroSection({ onStartTutorial }: HeroSectionProps) {
 
       <div className="container relative mx-auto px-4">
         <div className="max-w-4xl mx-auto text-center space-y-8">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary text-primary-foreground">
             <Sparkles className="w-4 h-4" />
-            <span className="text-sm font-medium">게임처럼 재미있게 배워요!</span>
+            <span className="text-sm font-bold">게임처럼 재미있게 배워요!</span>
           </div>
 
           <div className="space-y-4">
             <h1 className="text-4xl lg:text-5xl font-black leading-tight">
-              <span style={{ color: '#16a34a' }}>
+              <span style={{ color: '#357051' }}>
                 필터온
               </span>
               과 함께

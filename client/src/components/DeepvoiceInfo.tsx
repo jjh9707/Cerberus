@@ -90,11 +90,11 @@ export default function DeepvoiceInfo({ onStartExperience }: DeepvoiceInfoProps)
         </CardContent>
       </Card>
 
-      <Card className="bg-muted border-2 border-dashed">
+      <Card className="border-2 border-dashed" style={{ backgroundColor: 'hsl(150, 30%, 94%)', borderColor: 'hsl(150, 25%, 75%)' }}>
         <CardContent className="p-6">
           <div className="flex items-start gap-4">
-            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-              <Lock className="w-6 h-6 text-primary" />
+            <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: 'hsl(150, 36%, 32%)' }}>
+              <Lock className="w-6 h-6 text-white" />
             </div>
             <div className="space-y-2">
               <h3 className="text-lg font-bold flex items-center gap-2">
