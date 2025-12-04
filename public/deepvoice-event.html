@@ -1011,22 +1011,13 @@
       // 변환된 음성 재생
       // ========================================
       async function playConvertedAudio() {
-        if (!convertedAudioUrl || !recordedBlobUrl) return;
+        if (!convertedAudioUrl) return;
 
         playBtn.disabled = true;
         playLabel.textContent = "재생 중...";
         playBtn.setAttribute("aria-label", "재생 중");
 
         try {
-          const originalAudio = new Audio(recordedBlobUrl);
-          await originalAudio.play();
-
-          await new Promise((resolve) => {
-            originalAudio.onended = () => {
-              setTimeout(resolve, 500);
-            };
-          });
-
           const convertedAudio = new Audio(convertedAudioUrl);
           await convertedAudio.play();
 
