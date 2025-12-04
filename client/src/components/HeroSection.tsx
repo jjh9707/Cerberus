@@ -50,12 +50,12 @@ export default function HeroSection({ onStartTutorial }: HeroSectionProps) {
 
           <div className="space-y-4">
             <h1 className="text-4xl lg:text-5xl font-black leading-tight">
+              속지 않는 힘!
+              <br />
               <span style={{ color: '#357051' }}>
                 필터온
               </span>
-              과 함께
-              <br />
-              안전한 인터넷 배우기
+              과 함께 나를 지키는 힘 키우기
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               위험한 문자 메시지, SNS 사칭, 게임 아이템 사기를 알아보고
