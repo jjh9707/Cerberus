@@ -11,6 +11,7 @@ import Quiz from "@/pages/Quiz";
 import Deepvoice from "@/pages/Deepvoice";
 import Feedback from "@/pages/Feedback";
 import NotFound from "@/pages/not-found";
+import DeepvoiceEventOverlay from "@/components/DeepvoiceEventOverlay";
 
 function AppContent() {
   return (
@@ -40,6 +41,7 @@ function App() {
       <TooltipProvider>
         <GameProvider>
           <AppContent />
+          <DeepvoiceEventOverlay />
         </GameProvider>
         <Toaster />
       </TooltipProvider>
