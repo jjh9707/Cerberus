@@ -83,6 +83,21 @@
       background: var(--accent);
     }
 
+    .close-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .close-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-primary);
+    }
+
     .content {
       flex: 1;
       display: flex;
@@ -109,11 +124,6 @@
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(30px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
@@ -255,16 +265,6 @@
       cursor: not-allowed;
     }
 
-    .btn-secondary {
-      background: var(--bg-card);
-      color: var(--text-primary);
-      border: 1px solid #444;
-    }
-
-    .btn-secondary:hover {
-      background: #333;
-    }
-
     .loading-container {
       display: flex;
       flex-direction: column;
@@ -344,11 +344,13 @@
       opacity: 0;
       transform: translateY(20px);
       transition: all 0.8s ease;
+      pointer-events: none;
     }
 
     .warning-container.visible {
       opacity: 1;
       transform: translateY(0);
+      pointer-events: auto;
     }
 
     .warning-text {
@@ -369,7 +371,7 @@
       margin-bottom: 0;
     }
 
-    .close-btn {
+    .close-btn-main {
       margin-top: 2rem;
     }
 
@@ -458,25 +460,30 @@
   </style>
 </head>
 <body>
-  <div class="overlay" id="overlay">
+  <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="overlay-title">
     <header class="header">
       <div class="logo">필터온</div>
-      <div class="step-indicator">
+      <div class="step-indicator" role="progressbar" aria-valuenow="1" aria-valuemin="1" aria-valuemax="3">
         <span id="step-text">1/3</span>
         <div class="step-dot active" id="dot1"></div>
         <div class="step-dot" id="dot2"></div>
         <div class="step-dot" id="dot3"></div>
       </div>
+      <button class="close-btn" id="header-close-btn" aria-label="체험 닫기">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
     </header>
 
     <main class="content">
       <div class="screen active" id="screen-record">
-        <h1 class="title">음성을 녹음해주세요</h1>
+        <h1 id="overlay-title" class="title">음성을 녹음해주세요</h1>
         <p class="subtitle">아래 대본을 읽어주시면 AI가 당신의 목소리를 분석합니다</p>
 
         <div class="permission-guide" id="permission-guide">
           <div class="permission-title">
-            <svg class="mic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg class="mic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
               <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
               <line x1="12" y1="19" x2="12" y2="23"></line>
@@ -496,31 +503,31 @@
         </div>
 
         <div class="record-container">
-          <button class="record-btn" id="record-btn" aria-label="녹음">
+          <button class="record-btn" id="record-btn" aria-label="녹음 시작">
             <div class="record-icon"></div>
           </button>
           <div>
-            <div class="timer" id="timer">00:00</div>
+            <div class="timer" id="timer" aria-live="polite">00:00</div>
             <div class="timer-label" id="timer-label">녹음 대기 중</div>
           </div>
         </div>
 
-        <div class="error-container" id="error-container" style="display: none;">
+        <div class="error-container" id="error-container" style="display: none;" role="alert">
           <div class="error-title" id="error-title">오류가 발생했습니다</div>
           <p class="error-text" id="error-text"></p>
         </div>
 
         <button class="btn btn-primary" id="convert-btn" disabled style="margin-top: 2rem;">
           변환하기
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <path d="M5 12h14M12 5l7 7-7 7"/>
           </svg>
         </button>
       </div>
 
-      <div class="screen" id="screen-loading">
+      <div class="screen" id="screen-loading" role="status" aria-live="polite">
         <div class="loading-container">
-          <div class="spinner"></div>
+          <div class="spinner" aria-hidden="true"></div>
           <div>
             <div class="loading-text">음성을 변환하고 있습니다...</div>
             <div class="loading-subtext">잠시만 기다려주세요</div>
@@ -533,12 +540,12 @@
         <p class="subtitle">버튼을 눌러 변환된 음성을 들어보세요</p>
 
         <div class="result-container">
-          <button class="play-btn" id="play-btn" aria-label="재생">
-            <div class="play-icon"></div>
+          <button class="play-btn" id="play-btn" aria-label="변환된 음성 재생">
+            <div class="play-icon" aria-hidden="true"></div>
           </button>
-          <p class="timer-label" id="play-label">변환된 음성 들어보기</p>
+          <p class="timer-label" id="play-label" aria-live="polite">변환된 음성 들어보기</p>
 
-          <div class="warning-container" id="warning-container">
+          <div class="warning-container" id="warning-container" aria-hidden="true">
             <div class="warning-text">
               <p><strong>어떠신가요?</strong> 이 음성은 AI로 생성된 '딥보이스'(Deep Voice)입니다.</p>
               <p>짧게 말한 그 순간, 당신과 비슷한 목소리를 만들어 낼 수 있습니다.</p>
@@ -549,9 +556,9 @@
             </div>
           </div>
 
-          <button class="btn btn-primary close-btn" id="close-btn">
+          <button class="btn btn-primary close-btn-main" id="close-btn">
             체험 종료
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <path d="M5 12h14M12 5l7 7-7 7"/>
             </svg>
           </button>
@@ -567,15 +574,16 @@
     const SCRIPT_TEXT = "안녕하세요, 저는 필터온에서 딥보이스 체험을 하고 있습니다. 이 목소리가 어떻게 변할지 궁금하네요.";
     const DEEPVOICE_TEXT = "안녕하세요, 저는 AI가 만든 가짜 목소리입니다. 놀랍지 않나요? 이렇게 쉽게 목소리를 복제할 수 있습니다.";
     
-    // 첫 방문 체크 키
     const SESSION_KEY = 'filteron_deepvoice_event_visited';
     
     // ========================================
     // 상태 관리
     // ========================================
     let mediaRecorder = null;
+    let mediaStream = null;
     let audioChunks = [];
     let recordedBlob = null;
+    let recordedBlobUrl = null;
     let convertedAudioUrl = null;
     let timerInterval = null;
     let recordingStartTime = null;
@@ -594,6 +602,7 @@
     const convertBtn = document.getElementById('convert-btn');
     const playBtn = document.getElementById('play-btn');
     const closeBtn = document.getElementById('close-btn');
+    const headerCloseBtn = document.getElementById('header-close-btn');
     const timer = document.getElementById('timer');
     const timerLabel = document.getElementById('timer-label');
     const playLabel = document.getElementById('play-label');
@@ -603,30 +612,67 @@
     const errorText = document.getElementById('error-text');
     const permissionGuide = document.getElementById('permission-guide');
     const stepText = document.getElementById('step-text');
+    const stepIndicator = document.querySelector('.step-indicator');
     const dot1 = document.getElementById('dot1');
     const dot2 = document.getElementById('dot2');
     const dot3 = document.getElementById('dot3');
 
     // ========================================
+    // 리소스 정리
+    // ========================================
+    function cleanupResources() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      
+      if (mediaStream) {
+        mediaStream.getTracks().forEach(track => track.stop());
+        mediaStream = null;
+      }
+      
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        try {
+          mediaRecorder.stop();
+        } catch (e) {}
+      }
+      mediaRecorder = null;
+      
+      if (recordedBlobUrl) {
+        URL.revokeObjectURL(recordedBlobUrl);
+        recordedBlobUrl = null;
+      }
+      
+      if (convertedAudioUrl) {
+        URL.revokeObjectURL(convertedAudioUrl);
+        convertedAudioUrl = null;
+      }
+    }
+
+    // ========================================
+    // 방문 표시
+    // ========================================
+    function markAsVisited() {
+      sessionStorage.setItem(SESSION_KEY, 'true');
+    }
+
+    // ========================================
     // 초기화
     // ========================================
     function init() {
-      // 첫 방문 체크
       if (sessionStorage.getItem(SESSION_KEY)) {
         overlay.style.display = 'none';
         return;
       }
 
-      // 대본 표시
       scriptDisplay.textContent = SCRIPT_TEXT;
 
-      // 이벤트 리스너 등록
       recordBtn.addEventListener('click', toggleRecording);
       convertBtn.addEventListener('click', startConversion);
       playBtn.addEventListener('click', playConvertedAudio);
       closeBtn.addEventListener('click', closeOverlay);
+      headerCloseBtn.addEventListener('click', closeOverlay);
 
-      // 브라우저 지원 체크
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         showError('브라우저 미지원', '이 브라우저는 음성 녹음을 지원하지 않습니다. Chrome, Firefox, Safari 등 최신 브라우저를 사용해주세요.');
         recordBtn.disabled = true;
@@ -649,17 +695,20 @@
         case 'record':
           screenRecord.classList.add('active');
           stepText.textContent = '1/3';
+          stepIndicator.setAttribute('aria-valuenow', '1');
           dot1.classList.add('active');
           break;
         case 'loading':
           screenLoading.classList.add('active');
           stepText.textContent = '2/3';
+          stepIndicator.setAttribute('aria-valuenow', '2');
           dot1.classList.add('completed');
           dot2.classList.add('active');
           break;
         case 'result':
           screenResult.classList.add('active');
           stepText.textContent = '3/3';
+          stepIndicator.setAttribute('aria-valuenow', '3');
           dot1.classList.add('completed');
           dot2.classList.add('completed');
           dot3.classList.add('active');
@@ -703,14 +752,21 @@
           }
         });
         
+        mediaStream = stream;
         permissionGuide.style.display = 'none';
         
-        // MP3를 위해 webm으로 녹음 후 서버에서 변환
         const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') 
           ? 'audio/webm;codecs=opus' 
           : 'audio/webm';
         
-        mediaRecorder = new MediaRecorder(stream, { mimeType });
+        try {
+          mediaRecorder = new MediaRecorder(stream, { mimeType });
+        } catch (e) {
+          stream.getTracks().forEach(track => track.stop());
+          showError('녹음 초기화 실패', '녹음 기능을 초기화할 수 없습니다. 다른 브라우저를 사용해보세요.');
+          return;
+        }
+        
         audioChunks = [];
 
         mediaRecorder.ondataavailable = (event) => {
@@ -721,7 +777,10 @@
 
         mediaRecorder.onstop = () => {
           recordedBlob = new Blob(audioChunks, { type: mimeType });
-          stream.getTracks().forEach(track => track.stop());
+          if (recordedBlobUrl) {
+            URL.revokeObjectURL(recordedBlobUrl);
+          }
+          recordedBlobUrl = URL.createObjectURL(recordedBlob);
           convertBtn.disabled = false;
           timerLabel.textContent = '녹음 완료';
         };
@@ -730,6 +789,8 @@
         isRecording = true;
         recordingStartTime = Date.now();
         recordBtn.classList.add('recording');
+        recordBtn.setAttribute('aria-label', '녹음 중지');
+        recordBtn.setAttribute('aria-pressed', 'true');
         timerLabel.textContent = '녹음 중...';
         convertBtn.disabled = true;
 
@@ -749,12 +810,24 @@
     }
 
     function stopRecording() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      
       if (mediaRecorder && mediaRecorder.state !== 'inactive') {
         mediaRecorder.stop();
-        isRecording = false;
-        recordBtn.classList.remove('recording');
-        clearInterval(timerInterval);
       }
+      
+      if (mediaStream) {
+        mediaStream.getTracks().forEach(track => track.stop());
+        mediaStream = null;
+      }
+      
+      isRecording = false;
+      recordBtn.classList.remove('recording');
+      recordBtn.setAttribute('aria-label', '녹음 시작');
+      recordBtn.setAttribute('aria-pressed', 'false');
     }
 
     function updateTimer() {
@@ -772,6 +845,7 @@
       if (!recordedBlob) return;
 
       showScreen('loading');
+      hideError();
 
       try {
         const formData = new FormData();
@@ -789,8 +863,13 @@
         }
 
         const audioBlob = await response.blob();
+        
+        if (convertedAudioUrl) {
+          URL.revokeObjectURL(convertedAudioUrl);
+        }
         convertedAudioUrl = URL.createObjectURL(audioBlob);
         
+        markAsVisited();
         showScreen('result');
 
       } catch (error) {
@@ -804,24 +883,22 @@
     // 변환된 음성 재생
     // ========================================
     async function playConvertedAudio() {
-      if (!convertedAudioUrl) return;
+      if (!convertedAudioUrl || !recordedBlobUrl) return;
 
       playBtn.disabled = true;
       playLabel.textContent = '재생 중...';
+      playBtn.setAttribute('aria-label', '재생 중');
 
       try {
-        // 녹음된 원본 음성 재생
-        const originalAudio = new Audio(URL.createObjectURL(recordedBlob));
+        const originalAudio = new Audio(recordedBlobUrl);
         await originalAudio.play();
         
-        // 원본 재생 완료 후 잠시 대기
         await new Promise(resolve => {
           originalAudio.onended = () => {
             setTimeout(resolve, 500);
           };
         });
 
-        // 변환된 음성 재생
         const convertedAudio = new Audio(convertedAudioUrl);
         await convertedAudio.play();
 
@@ -829,13 +906,14 @@
           convertedAudio.onended = resolve;
         });
 
-        // 경고 문구 표시
         if (!hasPlayed) {
           hasPlayed = true;
           warningContainer.classList.add('visible');
+          warningContainer.setAttribute('aria-hidden', 'false');
         }
 
         playLabel.textContent = '다시 듣기';
+        playBtn.setAttribute('aria-label', '다시 듣기');
         playBtn.disabled = false;
 
       } catch (error) {
@@ -849,13 +927,13 @@
     // 오버레이 닫기
     // ========================================
     function closeOverlay() {
-      sessionStorage.setItem(SESSION_KEY, 'true');
+      markAsVisited();
       overlay.style.opacity = '0';
       overlay.style.transition = 'opacity 0.5s ease';
       
       setTimeout(() => {
+        cleanupResources();
         overlay.style.display = 'none';
-        // 메인 페이지로 이동
         window.location.href = '/';
       }, 500);
     }

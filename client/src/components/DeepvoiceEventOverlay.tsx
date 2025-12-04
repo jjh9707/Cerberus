@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Mic, MicOff, Play, ArrowRight, Loader2, AlertCircle, X } from 'lucide-react';
+import { Mic, Play, ArrowRight, Loader2, AlertCircle, X } from 'lucide-react';
 
 // ========================================
 // 설정 변수 (개발자가 수정)
@@ -29,11 +29,46 @@ export default function DeepvoiceEventOverlay({ onClose }: DeepvoiceEventOverlay
   const [isClosing, setIsClosing] = useState(false);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const recordedBlobRef = useRef<Blob | null>(null);
+  const recordedBlobUrlRef = useRef<string | null>(null);
   const convertedAudioUrlRef = useRef<string | null>(null);
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const recordingStartTimeRef = useRef<number>(0);
+
+  const cleanupResources = useCallback(() => {
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+      timerIntervalRef.current = null;
+    }
+    
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach(track => track.stop());
+      mediaStreamRef.current = null;
+    }
+    
+    if (mediaRecorderRef.current) {
+      if (mediaRecorderRef.current.state !== 'inactive') {
+        try {
+          mediaRecorderRef.current.stop();
+        } catch (e) {
+          // ignore
+        }
+      }
+      mediaRecorderRef.current = null;
+    }
+    
+    if (recordedBlobUrlRef.current) {
+      URL.revokeObjectURL(recordedBlobUrlRef.current);
+      recordedBlobUrlRef.current = null;
+    }
+    
+    if (convertedAudioUrlRef.current) {
+      URL.revokeObjectURL(convertedAudioUrlRef.current);
+      convertedAudioUrlRef.current = null;
+    }
+  }, []);
 
   useEffect(() => {
     const hasVisited = sessionStorage.getItem(SESSION_KEY);
@@ -44,13 +79,12 @@ export default function DeepvoiceEventOverlay({ onClose }: DeepvoiceEventOverlay
 
   useEffect(() => {
     return () => {
-      if (timerIntervalRef.current) {
-        clearInterval(timerIntervalRef.current);
-      }
-      if (convertedAudioUrlRef.current) {
-        URL.revokeObjectURL(convertedAudioUrlRef.current);
-      }
+      cleanupResources();
     };
+  }, [cleanupResources]);
+
+  const markAsVisited = useCallback(() => {
+    sessionStorage.setItem(SESSION_KEY, 'true');
   }, []);
 
   const formatTime = (seconds: number) => {
@@ -63,6 +97,14 @@ export default function DeepvoiceEventOverlay({ onClose }: DeepvoiceEventOverlay
     try {
       setError(null);
       
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        setError({
+          title: '브라우저 미지원',
+          message: '이 브라우저는 음성 녹음을 지원하지 않습니다. Chrome, Firefox, Safari 등 최신 브라우저를 사용해주세요.'
+        });
+        return;
+      }
+      
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: true,
@@ -70,12 +112,25 @@ export default function DeepvoiceEventOverlay({ onClose }: DeepvoiceEventOverlay
           sampleRate: 44100
         }
       });
+      
+      mediaStreamRef.current = stream;
 
       const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
         ? 'audio/webm;codecs=opus'
         : 'audio/webm';
 
-      const mediaRecorder = new MediaRecorder(stream, { mimeType });
+      let mediaRecorder: MediaRecorder;
+      try {
+        mediaRecorder = new MediaRecorder(stream, { mimeType });
+      } catch (e) {
+        stream.getTracks().forEach(track => track.stop());
+        setError({
+          title: '녹음 초기화 실패',
+          message: '녹음 기능을 초기화할 수 없습니다. 다른 브라우저를 사용해보세요.'
+        });
+        return;
+      }
+      
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
 
@@ -87,7 +142,10 @@ export default function DeepvoiceEventOverlay({ onClose }: DeepvoiceEventOverlay
 
       mediaRecorder.onstop = () => {
         recordedBlobRef.current = new Blob(audioChunksRef.current, { type: mimeType });
-        stream.getTracks().forEach(track => track.stop());
+        if (recordedBlobUrlRef.current) {
+          URL.revokeObjectURL(recordedBlobUrlRef.current);
+        }
+        recordedBlobUrlRef.current = URL.createObjectURL(recordedBlobRef.current);
         setHasRecording(true);
       };
 
@@ -124,13 +182,21 @@ export default function DeepvoiceEventOverlay({ onClose }: DeepvoiceEventOverlay
   }, []);
 
   const stopRecording = useCallback(() => {
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+      timerIntervalRef.current = null;
+    }
+    
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
       mediaRecorderRef.current.stop();
-      setIsRecording(false);
-      if (timerIntervalRef.current) {
-        clearInterval(timerIntervalRef.current);
-      }
     }
+    
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach(track => track.stop());
+      mediaStreamRef.current = null;
+    }
+    
+    setIsRecording(false);
   }, []);
 
   const toggleRecording = useCallback(() => {
@@ -145,6 +211,7 @@ export default function DeepvoiceEventOverlay({ onClose }: DeepvoiceEventOverlay
     if (!recordedBlobRef.current) return;
 
     setCurrentScreen('loading');
+    setError(null);
 
     try {
       const formData = new FormData();
@@ -162,8 +229,13 @@ export default function DeepvoiceEventOverlay({ onClose }: DeepvoiceEventOverlay
       }
 
       const audioBlob = await response.blob();
+      
+      if (convertedAudioUrlRef.current) {
+        URL.revokeObjectURL(convertedAudioUrlRef.current);
+      }
       convertedAudioUrlRef.current = URL.createObjectURL(audioBlob);
       
+      markAsVisited();
       setCurrentScreen('result');
 
     } catch (err) {
@@ -174,15 +246,15 @@ export default function DeepvoiceEventOverlay({ onClose }: DeepvoiceEventOverlay
         message: (err as Error).message || '음성 변환에 실패했습니다. 다시 시도해주세요.'
       });
     }
-  }, []);
+  }, [markAsVisited]);
 
   const playConvertedAudio = useCallback(async () => {
-    if (!convertedAudioUrlRef.current || !recordedBlobRef.current) return;
+    if (!convertedAudioUrlRef.current || !recordedBlobUrlRef.current) return;
 
     setIsPlaying(true);
 
     try {
-      const originalAudio = new Audio(URL.createObjectURL(recordedBlobRef.current));
+      const originalAudio = new Audio(recordedBlobUrlRef.current);
       await originalAudio.play();
       
       await new Promise<void>(resolve => {
@@ -210,14 +282,15 @@ export default function DeepvoiceEventOverlay({ onClose }: DeepvoiceEventOverlay
   }, [hasPlayed]);
 
   const closeOverlay = useCallback(() => {
-    sessionStorage.setItem(SESSION_KEY, 'true');
+    markAsVisited();
     setIsClosing(true);
     
     setTimeout(() => {
+      cleanupResources();
       setIsVisible(false);
       onClose?.();
     }, 500);
-  }, [onClose]);
+  }, [onClose, markAsVisited, cleanupResources]);
 
   if (!isVisible) return null;
 
@@ -239,6 +312,9 @@ export default function DeepvoiceEventOverlay({ onClose }: DeepvoiceEventOverlay
       className={`fixed inset-0 z-[9999] flex flex-col transition-opacity duration-500 ${isClosing ? 'opacity-0' : 'opacity-100'}`}
       style={{ backgroundColor: '#0f0f0f' }}
       data-testid="deepvoice-event-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="overlay-title"
     >
       <header className="flex items-center justify-between p-4 border-b border-neutral-800">
         <div className="text-xl font-bold" style={{ color: '#357051' }}>
@@ -246,7 +322,7 @@ export default function DeepvoiceEventOverlay({ onClose }: DeepvoiceEventOverlay
         </div>
         <div className="flex items-center gap-2 text-sm text-neutral-400">
           <span>{stepInfo.text}</span>
-          <div className="flex gap-1">
+          <div className="flex gap-1" role="progressbar" aria-valuenow={stepInfo.step} aria-valuemin={1} aria-valuemax={3}>
             {[1, 2, 3].map((step) => (
               <div
                 key={step}
@@ -267,6 +343,7 @@ export default function DeepvoiceEventOverlay({ onClose }: DeepvoiceEventOverlay
           onClick={closeOverlay}
           className="text-neutral-400 hover:text-white"
           data-testid="button-close-overlay"
+          aria-label="체험 닫기"
         >
           <X className="w-5 h-5" />
         </Button>
@@ -275,7 +352,7 @@ export default function DeepvoiceEventOverlay({ onClose }: DeepvoiceEventOverlay
       <main className="flex-1 flex flex-col items-center justify-center p-4 md:p-8 overflow-y-auto">
         {currentScreen === 'record' && (
           <div className="flex flex-col items-center text-center max-w-xl w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
+            <h1 id="overlay-title" className="text-2xl md:text-3xl font-bold text-white mb-2">
               음성을 녹음해주세요
             </h1>
             <p className="text-neutral-400 mb-6">
@@ -286,7 +363,7 @@ export default function DeepvoiceEventOverlay({ onClose }: DeepvoiceEventOverlay
               <Card className="w-full mb-6 bg-neutral-900 border-neutral-800">
                 <CardContent className="p-4">
                   <div className="flex items-center gap-2 text-neutral-400 text-sm mb-2">
-                    <Mic className="w-4 h-4" />
+                    <Mic className="w-4 h-4" aria-hidden="true" />
                     마이크 권한이 필요합니다
                   </div>
                   <p className="text-neutral-500 text-sm">
@@ -319,16 +396,18 @@ export default function DeepvoiceEventOverlay({ onClose }: DeepvoiceEventOverlay
                   boxShadow: isRecording ? '0 0 0 8px rgba(239, 68, 68, 0.2)' : 'none'
                 }}
                 data-testid="button-record"
+                aria-label={isRecording ? '녹음 중지' : '녹음 시작'}
+                aria-pressed={isRecording}
               >
                 {isRecording ? (
-                  <div className="w-5 h-5 bg-white rounded-sm" />
+                  <div className="w-5 h-5 bg-white rounded-sm" aria-hidden="true" />
                 ) : (
-                  <div className="w-6 h-6 bg-white rounded-full" />
+                  <div className="w-6 h-6 bg-white rounded-full" aria-hidden="true" />
                 )}
               </button>
 
               <div className="text-center">
-                <div className="text-3xl font-semibold text-white font-mono">
+                <div className="text-3xl font-semibold text-white font-mono" aria-live="polite">
                   {formatTime(recordingTime)}
                 </div>
                 <div className="text-sm text-neutral-400">
@@ -338,9 +417,9 @@ export default function DeepvoiceEventOverlay({ onClose }: DeepvoiceEventOverlay
             </div>
 
             {error && (
-              <Card className="w-full mb-4 bg-red-950/50 border-red-900">
+              <Card className="w-full mb-4 bg-red-950/50 border-red-900" role="alert">
                 <CardContent className="p-4 flex gap-3">
-                  <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+                  <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" aria-hidden="true" />
                   <div>
                     <div className="font-semibold text-red-400">{error.title}</div>
                     <p className="text-sm text-red-300/80">{error.message}</p>
@@ -357,14 +436,14 @@ export default function DeepvoiceEventOverlay({ onClose }: DeepvoiceEventOverlay
               data-testid="button-convert"
             >
               변환하기
-              <ArrowRight className="w-5 h-5" />
+              <ArrowRight className="w-5 h-5" aria-hidden="true" />
             </Button>
           </div>
         )}
 
         {currentScreen === 'loading' && (
-          <div className="flex flex-col items-center text-center animate-in fade-in duration-500">
-            <Loader2 className="w-16 h-16 text-[#357051] animate-spin mb-6" />
+          <div className="flex flex-col items-center text-center animate-in fade-in duration-500" role="status" aria-live="polite">
+            <Loader2 className="w-16 h-16 text-[#357051] animate-spin mb-6" aria-hidden="true" />
             <div className="text-xl text-neutral-300 mb-2">
               음성을 변환하고 있습니다...
             </div>
@@ -392,22 +471,25 @@ export default function DeepvoiceEventOverlay({ onClose }: DeepvoiceEventOverlay
                 boxShadow: '0 8px 32px rgba(53, 112, 81, 0.3)'
               }}
               data-testid="button-play"
+              aria-label={isPlaying ? '재생 중' : hasPlayed ? '다시 듣기' : '변환된 음성 재생'}
+              aria-disabled={isPlaying}
             >
               {isPlaying ? (
-                <Loader2 className="w-8 h-8 text-white animate-spin" />
+                <Loader2 className="w-8 h-8 text-white animate-spin" aria-hidden="true" />
               ) : (
-                <Play className="w-8 h-8 text-white ml-1" />
+                <Play className="w-8 h-8 text-white ml-1" aria-hidden="true" />
               )}
             </button>
-            <p className="text-sm text-neutral-400 mt-3 mb-6">
+            <p className="text-sm text-neutral-400 mt-3 mb-6" aria-live="polite">
               {isPlaying ? '재생 중...' : hasPlayed ? '다시 듣기' : '변환된 음성 들어보기'}
             </p>
 
             <div 
               className={`w-full bg-neutral-900 rounded-2xl p-6 border-l-4 text-left transition-all duration-700 ${
-                hasPlayed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+                hasPlayed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
               }`}
               style={{ borderColor: '#357051' }}
+              aria-hidden={!hasPlayed}
             >
               <div className="text-neutral-300 leading-relaxed space-y-4">
                 <p>
@@ -437,7 +519,7 @@ export default function DeepvoiceEventOverlay({ onClose }: DeepvoiceEventOverlay
               data-testid="button-close-event"
             >
               체험 종료
-              <ArrowRight className="w-5 h-5" />
+              <ArrowRight className="w-5 h-5" aria-hidden="true" />
             </Button>
           </div>
         )}
